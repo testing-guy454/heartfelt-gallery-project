@@ -46,24 +46,24 @@ function Cover() {
   }
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center px-6 py-16 overflow-hidden">
+    <div className="relative h-screen flex items-center justify-center px-4 py-4 overflow-hidden">
       <FloatingPetals />
 
-      <Sprig className="hidden md:block absolute left-6 top-16 w-24 text-[color:var(--pink-vivid)]/50 rise-1" />
+      <Sprig className="hidden md:block absolute left-4 top-6 w-20 text-[color:var(--pink-vivid)]/50 rise-1" />
       <Sprig
         flip
-        className="hidden md:block absolute right-6 bottom-16 w-24 text-[color:var(--pink-vivid)]/50 rise-2"
+        className="hidden md:block absolute right-4 bottom-6 w-20 text-[color:var(--pink-vivid)]/50 rise-2"
       />
-      <Butterfly className="hidden md:block absolute right-24 top-24 w-12 text-[color:var(--pink-vivid)]/70 animate-[sway_7s_ease-in-out_infinite]" />
-      <Butterfly className="hidden md:block absolute left-32 bottom-32 w-9 text-[color:var(--rose-deep)]/60 animate-[sway_9s_ease-in-out_infinite]" />
+      <Butterfly className="hidden md:block absolute right-16 top-10 w-10 text-[color:var(--pink-vivid)]/70 animate-[sway_7s_ease-in-out_infinite]" />
+      <Butterfly className="hidden md:block absolute left-20 bottom-16 w-8 text-[color:var(--rose-deep)]/60 animate-[sway_9s_ease-in-out_infinite]" />
 
       <form
         onSubmit={onSubmit}
-        className={`relative z-10 w-full max-w-xl rise-1 ${error ? "shake" : ""}`}
+        className={`relative z-10 w-full max-w-lg rise-1 ${error ? "shake" : ""}`}
         style={{ transform: "rotate(-0.6deg)" }}
       >
         {/* vintage letter paper */}
-        <div className="relative bg-[color:var(--letter-paper)] border border-[color:var(--sepia)]/25 px-8 sm:px-14 pt-12 pb-14 shadow-[0_28px_70px_-30px_rgba(80,40,30,0.5),0_2px_6px_rgba(80,40,30,0.12)] letter-paper">
+        <div className="relative bg-[color:var(--letter-paper)] border border-[color:var(--sepia)]/25 px-8 sm:px-12 pt-8 pb-8 shadow-[0_28px_70px_-30px_rgba(80,40,30,0.5),0_2px_6px_rgba(80,40,30,0.12)] letter-paper">
           {/* aged grain */}
           <div
             className="pointer-events-none absolute inset-0 opacity-60 mix-blend-multiply"
@@ -95,31 +95,29 @@ function Cover() {
           />
 
           <div className="relative z-10 text-center">
-            <p className="stamp-font text-[0.62rem] tracking-[0.5em] text-[color:var(--sepia)] uppercase">
+            <p className="stamp-font text-[0.6rem] tracking-[0.5em] text-[color:var(--sepia)] uppercase">
               a keepsake · for you
             </p>
 
-            <p className="hand text-3xl text-[color:var(--pink-vivid)] mt-6">for you, my love —</p>
+            <p className="hand text-2xl text-[color:var(--pink-vivid)] mt-3">for you, my love —</p>
 
-            <h1 className="serif text-5xl sm:text-7xl mt-2 text-ink italic leading-[1.05]">
+            <h1 className="serif text-4xl sm:text-6xl mt-1 text-ink italic leading-[1.05]">
               Our
               <span className="mx-3 text-[color:var(--pink-vivid)]">&amp;</span>
               Always
             </h1>
 
-            <Flourish className="mt-6 mb-4" />
+            <Flourish className="mt-3 mb-2" />
 
-            <p className="text-muted-foreground leading-relaxed max-w-md mx-auto italic">
-              Every quiet morning, every messy laugh, every somewhere-we-got-lost.
-              A little home for the moments I never want to forget — and all the
-              ones we haven't lived yet.
+            <p className="text-muted-foreground text-sm leading-relaxed max-w-md mx-auto italic">
+              Every quiet morning, every messy laugh, every somewhere-we-got-lost — a little home for the moments I never want to forget.
             </p>
 
             {/* input */}
-            <div className="mt-10 max-w-sm mx-auto">
+            <div className="mt-5 max-w-sm mx-auto">
               <label
                 htmlFor="passcode"
-                className="block stamp-font text-[0.6rem] tracking-[0.42em] text-[color:var(--sepia)]/85 uppercase mb-3"
+                className="block stamp-font text-[0.58rem] tracking-[0.42em] text-[color:var(--sepia)]/85 uppercase mb-2"
               >
                 whisper the word
               </label>
@@ -135,14 +133,14 @@ function Cover() {
                   if (error) setError(false);
                 }}
                 placeholder="our word"
-                className="relative z-10 w-full bg-transparent text-center font-serif italic text-2xl sm:text-[1.6rem] text-ink px-2 py-3 border-b border-[color:var(--sepia)]/45 focus:border-[color:var(--rose-deep)] outline-none transition-colors tracking-[0.18em] caret-[color:var(--rose-deep)] placeholder:text-[color:var(--sepia)]/45 placeholder:italic placeholder:tracking-[0.18em]"
+                className="relative z-10 w-full bg-transparent text-center font-serif italic text-xl sm:text-2xl text-ink px-2 py-2 border-b border-[color:var(--sepia)]/45 focus:border-[color:var(--rose-deep)] outline-none transition-colors tracking-[0.18em] caret-[color:var(--rose-deep)] placeholder:text-[color:var(--sepia)]/45 placeholder:italic placeholder:tracking-[0.18em]"
               />
 
-              <div className="min-h-[1.5rem] mt-3 relative z-10">
+              <div className="min-h-[1.25rem] mt-2 relative z-10">
                 {error ? (
-                  <p className="text-sm italic text-destructive">Not quite. Try again.</p>
+                  <p className="text-xs italic text-destructive">Not quite. Try again.</p>
                 ) : (
-                  <p className="text-xs italic text-muted-foreground/80">
+                  <p className="text-[11px] italic text-muted-foreground/80">
                     the one only you would guess
                   </p>
                 )}
@@ -151,15 +149,15 @@ function Cover() {
               <button
                 type="submit"
                 disabled={loading || !value.trim()}
-                className="mt-6 group inline-flex items-center gap-3 px-8 py-3 rounded-full bg-[color:var(--rose-deep)] text-[color:var(--primary-foreground)] text-[0.72rem] tracking-[0.32em] uppercase font-medium transition-all duration-300 hover:bg-[color:var(--pink-vivid)] hover:shadow-[0_20px_40px_-18px_color-mix(in_oklab,var(--rose-deep)_70%,transparent)] disabled:opacity-50 disabled:cursor-not-allowed"
+                className="mt-4 group inline-flex items-center gap-3 px-7 py-2.5 rounded-full bg-[color:var(--rose-deep)] text-[color:var(--primary-foreground)] text-[0.68rem] tracking-[0.32em] uppercase font-medium transition-all duration-300 hover:bg-[color:var(--pink-vivid)] hover:shadow-[0_20px_40px_-18px_color-mix(in_oklab,var(--rose-deep)_70%,transparent)] disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <HeartIcon className="w-3.5 h-3.5" />
                 <span>{loading ? "opening" : "open the album"}</span>
               </button>
             </div>
 
-            <div className="gold-divider my-8 mx-auto w-40" />
-            <p className="stamp-font text-[10px] uppercase tracking-[0.35em] text-[color:var(--sepia)]/80">
+            <div className="gold-divider mt-5 mb-2 mx-auto w-32" />
+            <p className="stamp-font text-[9px] uppercase tracking-[0.35em] text-[color:var(--sepia)]/80">
               hand-made · no. 001
             </p>
           </div>
