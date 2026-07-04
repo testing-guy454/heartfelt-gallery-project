@@ -17,7 +17,7 @@ export const Route = createFileRoute("/album/c/$slug")({
     try {
       return await getChapter({ data: { slug: params.slug } });
     } catch (e: any) {
-      if (e?.message === "locked") throw redirect({ to: "/unlock" });
+      if (e?.message === "locked") throw redirect({ to: "/" });
       throw e;
     }
   },

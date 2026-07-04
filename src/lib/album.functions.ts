@@ -20,7 +20,7 @@ function sessionConfig() {
 async function requireUnlocked() {
   const session = await useSession<GateSession>(sessionConfig());
   if (!session.data.unlocked) {
-    throw redirect({ to: "/unlock" });
+    throw redirect({ to: "/" });
   }
 }
 
