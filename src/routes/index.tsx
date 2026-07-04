@@ -52,9 +52,10 @@ function Cover() {
 
       <form
         onSubmit={onSubmit}
-        className={`relative z-10 w-full max-w-xl rise-1 ${error ? "shake" : ""}`}
+        className="relative z-10 w-full max-w-xl rise-1"
         style={{ transform: "rotate(-0.6deg)" }}
       >
+
         {/* vintage letter paper */}
         <div className="relative bg-[color:var(--letter-paper)] border border-[color:var(--sepia)]/25 px-8 sm:px-12 pt-10 pb-10 shadow-[0_28px_70px_-30px_rgba(80,40,30,0.5),0_2px_6px_rgba(80,40,30,0.12)] letter-paper">
 
