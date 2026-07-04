@@ -22,7 +22,7 @@ function Unlock() {
     if (unlocked) router.navigate({ to: "/album" });
   }, [unlocked, router]);
 
-  useEffect(() => {
+  useEffect(() {
     const t = setTimeout(() => inputRef.current?.focus(), 300);
     return () => clearTimeout(t);
   }, []);
@@ -57,36 +57,57 @@ function Unlock() {
       <form
         onSubmit={onSubmit}
         className={`relative w-full max-w-md rise-1 ${error ? "shake" : ""}`}
+        style={{ transform: "rotate(-0.8deg)" }}
       >
-        {/* layered paper card */}
-        <div className="relative rounded-md bg-[color:var(--card)]/92 backdrop-blur-sm border border-[color:var(--sepia)]/20 px-9 py-12 sm:px-12 sm:py-14 shadow-[0_30px_60px_-35px_rgba(60,20,30,0.35),0_1px_3px_rgba(60,20,30,0.08)]">
-          {/* paper grain + stain texture */}
+        {/* vintage letter paper */}
+        <div className="relative bg-[color:var(--letter-paper)] border border-[color:var(--sepia)]/25 px-9 py-12 sm:px-12 sm:py-14 shadow-[0_24px_60px_-30px_rgba(80,40,30,0.45),0_2px_6px_rgba(80,40,30,0.12)] letter-paper">
+          {/* aged grain overlay */}
           <div
-            className="pointer-events-none absolute inset-0 rounded-md opacity-40 mix-blend-multiply"
+            className="pointer-events-none absolute inset-0 opacity-50 mix-blend-multiply"
             style={{
               backgroundImage:
-                "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/><feColorMatrix values='0 0 0 0 0.28 0 0 0 0 0.18 0 0 0 0 0.16 0 0 0 0.12 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>\")",
+                "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='320' height='320'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4'/><feColorMatrix values='0 0 0 0 0.32 0 0 0 0 0.22 0 0 0 0 0.14 0 0 0 0.14 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>\")",
             }}
           />
 
-          {/* soft fold crease */}
-          <div className="pointer-events-none absolute left-0 right-0 top-1/2 h-px bg-gradient-to-r from-transparent via-[color:var(--sepia)]/20 to-transparent" />
+          {/* fold creases */}
+          <div className="pointer-events-none absolute left-0 right-0 top-1/2 h-px bg-gradient-to-r from-transparent via-[color:var(--sepia)]/25 to-transparent" />
+          <div className="pointer-events-none absolute top-0 bottom-0 left-1/2 w-px bg-gradient-to-b from-transparent via-[color:var(--sepia)]/15 to-transparent" />
+
+          {/* tea stain spots */}
+          <div className="pointer-events-none absolute top-8 right-10 w-24 h-24 rounded-full bg-[color:var(--sepia)]/10 blur-2xl" />
+          <div className="pointer-events-none absolute bottom-16 left-8 w-16 h-16 rounded-full bg-[color:var(--rose-deep)]/8 blur-xl" />
+
+          {/* deckled edge mask */}
+          <div className="pointer-events-none absolute inset-0 deckled" />
+
+          {/* faint letter lines */}
+          <div
+            className="pointer-events-none absolute inset-0 opacity-[0.08]"
+            style={{
+              backgroundImage:
+                "repeating-linear-gradient(0deg, transparent, transparent 31px, var(--sepia) 31px, var(--sepia) 32px)",
+              backgroundPosition: "0 88px",
+            }}
+          />
 
           {/* thin inner frame with corner leaves */}
-          <div className="pointer-events-none absolute inset-3 rounded-sm border border-[color:var(--gold)]/40">
+          <div className="pointer-events-none absolute inset-3 border border-[color:var(--gold)]/35">
             <CornerLeaf className="absolute -top-1.5 -left-1.5" />
             <CornerLeaf className="absolute -top-1.5 -right-1.5 rotate-90" />
             <CornerLeaf className="absolute -bottom-1.5 -left-1.5 -rotate-90" />
             <CornerLeaf className="absolute -bottom-1.5 -right-1.5 rotate-180" />
           </div>
 
-          {/* small vintage stamp */}
-          <div className="absolute top-5 right-5 flex flex-col items-center justify-center w-12 h-14 border border-[color:var(--rose-deep)]/30 rounded-sm rotate-6 opacity-80">
-            <span className="stamp-font text-[0.5rem] tracking-[0.2em] uppercase text-[color:var(--rose-deep)]/80">love</span>
-            <svg width="16" height="16" viewBox="0 0 16 16" className="text-[color:var(--rose-deep)]/70 mt-0.5">
-              <path d="M8 14S3 10.5 3 6.5C3 4.3 4.6 3 6.4 3c.9 0 1.6.5 1.6 1.1.4-.6 1.1-1.1 2-1.1C11.8 3 13 4.3 13 6.5 13 10.5 8 14 8 14z" fill="currentColor" />
-            </svg>
-            <span className="stamp-font text-[0.4rem] tracking-[0.15em] uppercase text-[color:var(--sepia)]/70 mt-0.5">01</span>
+          {/* small postmark */}
+          <div className="absolute top-5 right-5 sm:top-6 sm:right-6 flex items-center justify-center w-16 h-16 border border-[color:var(--sepia)]/30 rounded-full rotate-12 opacity-75">
+            <div className="flex flex-col items-center text-[color:var(--sepia)]/80">
+              <span className="stamp-font text-[0.48rem] tracking-[0.2em] uppercase">love</span>
+              <svg width="14" height="14" viewBox="0 0 14 14" className="my-0.5">
+                <path d="M7 12S2.5 9 2.5 5.5C2.5 3.5 4 2.5 5.5 2.5c.8 0 1.4.4 1.5.8.3-.4.8-.8 1.5-.8C10 2.5 11.5 3.5 11.5 5.5 11.5 9 7 12 7 12z" fill="currentColor" />
+              </svg>
+              <span className="stamp-font text-[0.4rem] tracking-[0.15em] uppercase">No. 01</span>
+            </div>
           </div>
 
           {/* eyebrow */}
@@ -180,6 +201,12 @@ function Unlock() {
           80% { transform: translateX(4px); }
         }
         .shake { animation: shakeX 380ms ease; }
+        .letter-paper {
+          clip-path: polygon(
+            0% 1%, 2% 0%, 5% 1%, 8% 0%, 12% 1%, 16% 0%, 20% 1%, 24% 0%, 28% 1%, 32% 0%, 36% 1%, 40% 0%, 44% 1%, 48% 0%, 52% 1%, 56% 0%, 60% 1%, 64% 0%, 68% 1%, 72% 0%, 76% 1%, 80% 0%, 84% 1%, 88% 0%, 92% 1%, 96% 0%, 100% 1%,
+            100% 98%, 98% 100%, 95% 99%, 92% 100%, 88% 99%, 84% 100%, 80% 99%, 76% 100%, 72% 99%, 68% 100%, 64% 99%, 60% 100%, 56% 99%, 52% 100%, 48% 99%, 44% 100%, 40% 99%, 36% 100%, 32% 99%, 28% 100%, 24% 99%, 20% 100%, 16% 99%, 12% 100%, 8% 99%, 4% 100%, 0% 99%
+          );
+        }
       `}</style>
     </div>
   );
