@@ -282,7 +282,7 @@ function TapedFrame({ layout, num, title, description, dateStr, cover }: FramePr
 
 function TornFrame({ layout, num, title, description, dateStr, cover }: FrameProps) {
   return (
-    <div className="aged-paper relative p-5 pb-6 torn-clip">
+    <div className="aged-paper relative p-5 pb-6">
       <div className="flex items-start gap-4">
         <div className={`relative ${SIZE_ASPECT[layout.size]} w-3/5 overflow-hidden bg-muted flex-shrink-0`}>
           {cover && (
