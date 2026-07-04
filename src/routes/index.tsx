@@ -19,9 +19,6 @@ function Cover() {
   const { unlocked } = Route.useLoaderData();
   const router = useRouter();
   const unlock = useServerFn(unlockAlbum);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const [value, setValue] = useState("");
-  const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -30,20 +27,16 @@ function Cover() {
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (!value.trim()) return;
     setLoading(true);
-    setError(false);
-    const res = await unlock({ data: { passcode: value } });
+    const res = await unlock({ data: {} });
     if (res.ok) {
       await router.invalidate();
       router.navigate({ to: "/album" });
     } else {
       setLoading(false);
-      setError(true);
-      inputRef.current?.focus();
-      inputRef.current?.select();
     }
   }
+
 
   return (
     <div className="relative h-screen flex items-center justify-center px-6 py-6 overflow-hidden">
