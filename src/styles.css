@@ -87,6 +87,7 @@
   --rose-deep: oklch(0.52 0.15 10);
   --pink-vivid: oklch(0.68 0.22 8);              /* the pop */
   --sepia: oklch(0.55 0.09 60);
+  --letter-paper: oklch(0.955 0.028 82);        /* aged letter sheet */
 }
 
 @layer base {
