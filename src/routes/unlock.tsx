@@ -41,12 +41,13 @@ function Unlock() {
       <FloatingPetals />
       <form
         onSubmit={onSubmit}
-        className="paper-deep relative rounded-2xl px-10 py-14 max-w-md w-full text-center rise-1"
+        className="aged-paper fold-crease relative rounded-2xl px-10 py-14 max-w-md w-full text-center rise-1 overflow-hidden"
       >
         <CornerOrnament position="tl" />
         <CornerOrnament position="tr" />
         <CornerOrnament position="bl" />
         <CornerOrnament position="br" />
+        <span className="washi-tape-gold" />
 
         <div className="mx-auto mb-4 w-14 h-14 rounded-full flex items-center justify-center bg-[color:var(--rose-deep)]/10 text-[color:var(--rose-deep)]">
           <HeartIcon className="w-7 h-7 animate-[heartbeat_2.4s_ease-in-out_infinite]" />
