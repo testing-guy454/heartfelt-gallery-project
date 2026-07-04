@@ -73,9 +73,6 @@ function Cover() {
             }}
           />
 
-          {/* fold creases */}
-          <div className="pointer-events-none absolute left-0 right-0 top-1/3 h-px bg-gradient-to-r from-transparent via-[color:var(--sepia)]/30 to-transparent" />
-          <div className="pointer-events-none absolute left-0 right-0 top-2/3 h-px bg-gradient-to-r from-transparent via-[color:var(--sepia)]/20 to-transparent" />
 
           {/* tea stains */}
           <div className="pointer-events-none absolute top-10 right-14 w-28 h-28 rounded-full bg-[color:var(--sepia)]/12 blur-2xl" />
