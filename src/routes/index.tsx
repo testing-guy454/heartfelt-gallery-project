@@ -1,25 +1,54 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
+import { useEffect, useRef, useState } from "react";
+import { unlockAlbum, isAlbumUnlocked } from "@/lib/gate.functions";
 import {
   FloatingPetals,
   HeartIcon,
   Sprig,
-  CornerOrnament,
   Flourish,
-  PostageStamp,
-  Postmark,
   Butterfly,
 } from "@/components/album/Ornaments";
 
 export const Route = createFileRoute("/")({
+  loader: async () => await isAlbumUnlocked(),
   component: Cover,
 });
 
 function Cover() {
+  const { unlocked } = Route.useLoaderData();
+  const router = useRouter();
+  const unlock = useServerFn(unlockAlbum);
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [value, setValue] = useState("");
+  const [error, setError] = useState(false);
+  const [loading, setLoading] = useState(false);
+
+  useEffect(() => {
+    if (unlocked) router.navigate({ to: "/album" });
+  }, [unlocked, router]);
+
+  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    if (!value.trim()) return;
+    setLoading(true);
+    setError(false);
+    const res = await unlock({ data: { passcode: value } });
+    if (res.ok) {
+      await router.invalidate();
+      router.navigate({ to: "/album" });
+    } else {
+      setLoading(false);
+      setError(true);
+      inputRef.current?.focus();
+      inputRef.current?.select();
+    }
+  }
+
   return (
     <div className="relative min-h-screen flex items-center justify-center px-6 py-16 overflow-hidden">
       <FloatingPetals />
 
-      {/* Side sprigs */}
       <Sprig className="hidden md:block absolute left-6 top-16 w-24 text-[color:var(--pink-vivid)]/50 rise-1" />
       <Sprig
         flip
@@ -28,80 +57,131 @@ function Cover() {
       <Butterfly className="hidden md:block absolute right-24 top-24 w-12 text-[color:var(--pink-vivid)]/70 animate-[sway_7s_ease-in-out_infinite]" />
       <Butterfly className="hidden md:block absolute left-32 bottom-32 w-9 text-[color:var(--rose-deep)]/60 animate-[sway_9s_ease-in-out_infinite]" />
 
-      <div className="relative z-10 max-w-xl w-full">
-        {/* Envelope flap */}
-        <div className="relative mx-auto w-full">
+      <form
+        onSubmit={onSubmit}
+        className={`relative z-10 w-full max-w-xl rise-1 ${error ? "shake" : ""}`}
+        style={{ transform: "rotate(-0.6deg)" }}
+      >
+        {/* vintage letter paper */}
+        <div className="relative bg-[color:var(--letter-paper)] border border-[color:var(--sepia)]/25 px-8 sm:px-14 pt-12 pb-14 shadow-[0_28px_70px_-30px_rgba(80,40,30,0.5),0_2px_6px_rgba(80,40,30,0.12)] letter-paper">
+          {/* aged grain */}
           <div
-            className="mx-auto h-24 w-full"
+            className="pointer-events-none absolute inset-0 opacity-60 mix-blend-multiply"
             style={{
-              clipPath: "polygon(0 0, 100% 0, 50% 100%)",
-              background:
-                "linear-gradient(180deg, color-mix(in oklab, var(--pink-vivid) 88%, black), color-mix(in oklab, var(--rose-deep) 80%, black))",
-              filter: "drop-shadow(0 6px 10px color-mix(in oklab, var(--ink) 35%, transparent))",
+              backgroundImage:
+                "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='320' height='320'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/><feColorMatrix values='0 0 0 0 0.32 0 0 0 0 0.22 0 0 0 0 0.14 0 0 0 0.14 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>\")",
             }}
           />
-          {/* wax seal */}
-          <div className="absolute left-1/2 top-16 -translate-x-1/2 animate-[heartbeat_2.4s_ease-in-out_infinite]">
-            <span className="wax-seal">
-              <HeartIcon className="w-8 h-8" />
-            </span>
-          </div>
-        </div>
 
-        {/* Letter body — aged paper with folds, stains, stamps */}
-        <div className="aged-paper fold-crease relative rounded-b-2xl px-8 md:px-14 pt-24 pb-14 text-center rise-3 overflow-hidden">
-          <CornerOrnament position="tl" />
-          <CornerOrnament position="tr" />
-          <CornerOrnament position="bl" />
-          <CornerOrnament position="br" />
+          {/* fold creases */}
+          <div className="pointer-events-none absolute left-0 right-0 top-1/3 h-px bg-gradient-to-r from-transparent via-[color:var(--sepia)]/30 to-transparent" />
+          <div className="pointer-events-none absolute left-0 right-0 top-2/3 h-px bg-gradient-to-r from-transparent via-[color:var(--sepia)]/20 to-transparent" />
 
-          {/* Postage stamp + postmark, tucked in the top-right */}
-          <div className="absolute top-5 right-5 flex flex-col items-end gap-2 z-10">
-            <div style={{ transform: "rotate(6deg)" }}>
-              <PostageStamp />
+          {/* tea stains */}
+          <div className="pointer-events-none absolute top-10 right-14 w-28 h-28 rounded-full bg-[color:var(--sepia)]/12 blur-2xl" />
+          <div className="pointer-events-none absolute bottom-16 left-10 w-20 h-20 rounded-full bg-[color:var(--sepia)]/10 blur-xl" />
+
+          {/* deckled edges */}
+          <div className="pointer-events-none absolute inset-0 deckled" />
+
+          {/* faint ruled lines */}
+          <div
+            className="pointer-events-none absolute inset-0 opacity-[0.07]"
+            style={{
+              backgroundImage:
+                "repeating-linear-gradient(0deg, transparent, transparent 31px, var(--sepia) 31px, var(--sepia) 32px)",
+              backgroundPosition: "0 88px",
+            }}
+          />
+
+          <div className="relative z-10 text-center">
+            <p className="stamp-font text-[0.62rem] tracking-[0.5em] text-[color:var(--sepia)] uppercase">
+              a keepsake · for you
+            </p>
+
+            <p className="hand text-3xl text-[color:var(--pink-vivid)] mt-6">for you, my love —</p>
+
+            <h1 className="serif text-5xl sm:text-7xl mt-2 text-ink italic leading-[1.05]">
+              Our
+              <span className="mx-3 text-[color:var(--pink-vivid)]">&amp;</span>
+              Always
+            </h1>
+
+            <Flourish className="mt-6 mb-4" />
+
+            <p className="text-muted-foreground leading-relaxed max-w-md mx-auto italic">
+              Every quiet morning, every messy laugh, every somewhere-we-got-lost.
+              A little home for the moments I never want to forget — and all the
+              ones we haven't lived yet.
+            </p>
+
+            {/* input */}
+            <div className="mt-10 max-w-sm mx-auto">
+              <label
+                htmlFor="passcode"
+                className="block stamp-font text-[0.6rem] tracking-[0.42em] text-[color:var(--sepia)]/85 uppercase mb-3"
+              >
+                whisper the word
+              </label>
+              <input
+                id="passcode"
+                ref={inputRef}
+                name="passcode"
+                type="password"
+                autoComplete="off"
+                value={value}
+                onChange={(e) => {
+                  setValue(e.target.value);
+                  if (error) setError(false);
+                }}
+                placeholder="our word"
+                className="relative z-10 w-full bg-transparent text-center font-serif italic text-2xl sm:text-[1.6rem] text-ink px-2 py-3 border-b border-[color:var(--sepia)]/45 focus:border-[color:var(--rose-deep)] outline-none transition-colors tracking-[0.18em] caret-[color:var(--rose-deep)] placeholder:text-[color:var(--sepia)]/45 placeholder:italic placeholder:tracking-[0.18em]"
+              />
+
+              <div className="min-h-[1.5rem] mt-3 relative z-10">
+                {error ? (
+                  <p className="text-sm italic text-destructive">Not quite. Try again.</p>
+                ) : (
+                  <p className="text-xs italic text-muted-foreground/80">
+                    the one only you would guess
+                  </p>
+                )}
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading || !value.trim()}
+                className="mt-6 group inline-flex items-center gap-3 px-8 py-3 rounded-full bg-[color:var(--rose-deep)] text-[color:var(--primary-foreground)] text-[0.72rem] tracking-[0.32em] uppercase font-medium transition-all duration-300 hover:bg-[color:var(--pink-vivid)] hover:shadow-[0_20px_40px_-18px_color-mix(in_oklab,var(--rose-deep)_70%,transparent)] disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <HeartIcon className="w-3.5 h-3.5" />
+                <span>{loading ? "opening" : "open the album"}</span>
+              </button>
             </div>
-            <Postmark city="Us · Always" label="Air Mail" />
-          </div>
 
-          {/* Handwritten address block, top-left */}
-          <div className="absolute top-6 left-6 text-left hand text-lg text-[color:var(--ink)]/70 leading-snug rotate-[-2deg] hidden md:block">
-            <div>To — my dearest,</div>
-            <div className="opacity-70">c/o the corner of my heart</div>
-            <div className="opacity-60">no. 143, forever lane</div>
-          </div>
-
-          <p className="hand text-3xl text-[color:var(--pink-vivid)]">for you, my love —</p>
-
-          <h1 className="serif text-6xl md:text-7xl mt-3 text-ink italic leading-[1.05]">
-            Our
-            <span className="mx-3 text-[color:var(--pink-vivid)]">&amp;</span>
-            Always
-          </h1>
-
-          <Flourish className="mt-6 mb-4" />
-
-          <p className="text-muted-foreground leading-relaxed max-w-md mx-auto italic">
-            Every quiet morning, every messy laugh, every somewhere-we-got-lost.
-            A little home for the moments I never want to forget — and all the
-            ones we haven't lived yet.
-          </p>
-
-          <div className="mt-10 flex flex-col items-center gap-4">
-            <Link to="/unlock" className="btn-love">
-              <HeartIcon className="w-4 h-4" />
-              Open the album
-            </Link>
-            <p className="hand text-xl text-[color:var(--pink-vivid)]/90">
-              — always, always yours
+            <div className="gold-divider my-8 mx-auto w-40" />
+            <p className="stamp-font text-[10px] uppercase tracking-[0.35em] text-[color:var(--sepia)]/80">
+              hand-made · no. 001
             </p>
           </div>
-
-          <div className="gold-divider my-8 mx-auto w-40" />
-          <p className="stamp-font text-[10px] uppercase tracking-[0.35em] text-[color:var(--sepia)]/80">
-            a keepsake · hand-made · no. 001
-          </p>
         </div>
-      </div>
+      </form>
+
+      <style>{`
+        @keyframes shakeX {
+          0%,100% { transform: translateX(0) rotate(-0.6deg); }
+          20% { transform: translateX(-6px) rotate(-0.6deg); }
+          40% { transform: translateX(6px) rotate(-0.6deg); }
+          60% { transform: translateX(-4px) rotate(-0.6deg); }
+          80% { transform: translateX(4px) rotate(-0.6deg); }
+        }
+        .shake { animation: shakeX 380ms ease; }
+        .letter-paper {
+          clip-path: polygon(
+            0% 1%, 2% 0%, 5% 1%, 8% 0%, 12% 1%, 16% 0%, 20% 1%, 24% 0%, 28% 1%, 32% 0%, 36% 1%, 40% 0%, 44% 1%, 48% 0%, 52% 1%, 56% 0%, 60% 1%, 64% 0%, 68% 1%, 72% 0%, 76% 1%, 80% 0%, 84% 1%, 88% 0%, 92% 1%, 96% 0%, 100% 1%,
+            100% 98%, 98% 100%, 95% 99%, 92% 100%, 88% 99%, 84% 100%, 80% 99%, 76% 100%, 72% 99%, 68% 100%, 64% 99%, 60% 100%, 56% 99%, 52% 100%, 48% 99%, 44% 100%, 40% 99%, 36% 100%, 32% 99%, 28% 100%, 24% 99%, 20% 100%, 16% 99%, 12% 100%, 8% 99%, 4% 100%, 0% 99%
+          );
+        }
+      `}</style>
     </div>
   );
 }
