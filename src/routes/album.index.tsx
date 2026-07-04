@@ -37,7 +37,7 @@ function AlbumHome() {
           <p className="text-center text-muted-foreground">No chapters yet.</p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            {chapters.map((c) => (
+            {chapters.map((c: any) => (
               <Link
                 key={c.id}
                 to="/album/c/$slug"

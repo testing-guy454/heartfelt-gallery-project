@@ -56,7 +56,7 @@ function ChapterView() {
         )}
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {photos.map((p, i) => (
+          {photos.map((p: any, i: number) => (
             <figure key={p.id} className="paper rounded-2xl overflow-hidden">
               <button onClick={() => setLightbox(i)} className="block w-full overflow-hidden">
                 <img
