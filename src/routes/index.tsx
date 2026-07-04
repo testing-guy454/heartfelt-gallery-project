@@ -1,6 +1,6 @@
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { unlockAlbum, isAlbumUnlocked } from "@/lib/gate.functions";
 import {
   FloatingPetals,
@@ -19,9 +19,6 @@ function Cover() {
   const { unlocked } = Route.useLoaderData();
   const router = useRouter();
   const unlock = useServerFn(unlockAlbum);
-  const inputRef = useRef<HTMLInputElement>(null);
-  const [value, setValue] = useState("");
-  const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -30,20 +27,16 @@ function Cover() {
 
   async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
-    if (!value.trim()) return;
     setLoading(true);
-    setError(false);
-    const res = await unlock({ data: { passcode: value } });
+    const res = await unlock({ data: {} });
     if (res.ok) {
       await router.invalidate();
       router.navigate({ to: "/album" });
     } else {
       setLoading(false);
-      setError(true);
-      inputRef.current?.focus();
-      inputRef.current?.select();
     }
   }
+
 
   return (
     <div className="relative h-screen flex items-center justify-center px-6 py-6 overflow-hidden">
@@ -59,9 +52,10 @@ function Cover() {
 
       <form
         onSubmit={onSubmit}
-        className={`relative z-10 w-full max-w-xl rise-1 ${error ? "shake" : ""}`}
+        className="relative z-10 w-full max-w-xl rise-1"
         style={{ transform: "rotate(-0.6deg)" }}
       >
+
         {/* vintage letter paper */}
         <div className="relative bg-[color:var(--letter-paper)] border border-[color:var(--sepia)]/25 px-8 sm:px-12 pt-10 pb-10 shadow-[0_28px_70px_-30px_rgba(80,40,30,0.5),0_2px_6px_rgba(80,40,30,0.12)] letter-paper">
 
@@ -111,48 +105,17 @@ function Cover() {
               Every quiet morning, every messy laugh, every somewhere-we-got-lost — a little home for the moments I never want to forget.
             </p>
 
-            {/* input */}
             <div className="mt-6 max-w-sm mx-auto">
-              <label
-                htmlFor="passcode"
-                className="block stamp-font text-[0.58rem] tracking-[0.42em] text-[color:var(--sepia)]/85 uppercase mb-2"
-              >
-                whisper the word
-              </label>
-              <input
-                id="passcode"
-                ref={inputRef}
-                name="passcode"
-                type="password"
-                autoComplete="off"
-                value={value}
-                onChange={(e) => {
-                  setValue(e.target.value);
-                  if (error) setError(false);
-                }}
-                placeholder="our word"
-                className="relative z-10 w-full bg-transparent text-center font-serif italic text-2xl sm:text-[1.6rem] text-ink px-2 py-3 border-b border-[color:var(--sepia)]/45 focus:border-[color:var(--rose-deep)] outline-none transition-colors tracking-[0.18em] caret-[color:var(--rose-deep)] placeholder:text-[color:var(--sepia)]/45 placeholder:italic placeholder:tracking-[0.18em]"
-              />
-
-              <div className="min-h-[1.5rem] mt-2 relative z-10">
-                {error ? (
-                  <p className="text-xs italic text-destructive">Not quite. Try again.</p>
-                ) : (
-                  <p className="text-[11px] italic text-muted-foreground/80">
-                    the one only you would guess
-                  </p>
-                )}
-              </div>
-
               <button
                 type="submit"
-                disabled={loading || !value.trim()}
-                className="mt-5 group inline-flex items-center gap-3 px-8 py-3 rounded-full bg-[color:var(--rose-deep)] text-[color:var(--primary-foreground)] text-[0.72rem] tracking-[0.32em] uppercase font-medium transition-all duration-300 hover:bg-[color:var(--pink-vivid)] hover:shadow-[0_20px_40px_-18px_color-mix(in_oklab,var(--rose-deep)_70%,transparent)] disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={loading}
+                className="mt-2 group inline-flex items-center gap-3 px-8 py-3 rounded-full bg-[color:var(--rose-deep)] text-[color:var(--primary-foreground)] text-[0.72rem] tracking-[0.32em] uppercase font-medium transition-all duration-300 hover:bg-[color:var(--pink-vivid)] hover:shadow-[0_20px_40px_-18px_color-mix(in_oklab,var(--rose-deep)_70%,transparent)] disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <HeartIcon className="w-3.5 h-3.5" />
                 <span>{loading ? "opening" : "open the album"}</span>
               </button>
             </div>
+
 
             <div className="gold-divider mt-6 mb-3 mx-auto w-40" />
             <p className="stamp-font text-[9px] uppercase tracking-[0.35em] text-[color:var(--sepia)]/80">
