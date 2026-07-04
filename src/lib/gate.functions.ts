@@ -27,9 +27,10 @@ function passwordMatches(input: string, expected: string): boolean {
 }
 
 export const isAlbumUnlocked = createServerFn({ method: "GET" }).handler(async () => {
-  const session = await useSession<GateSession>(sessionConfig());
-  return { unlocked: !!session.data.unlocked };
+  // Passcode temporarily disabled — always unlocked.
+  return { unlocked: true };
 });
+
 
 export const unlockAlbum = createServerFn({ method: "POST" })
   .inputValidator((data: { passcode?: string }) => data ?? {})
