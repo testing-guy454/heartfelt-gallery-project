@@ -27,20 +27,22 @@ function passwordMatches(input: string, expected: string): boolean {
 }
 
 export const isAlbumUnlocked = createServerFn({ method: "GET" }).handler(async () => {
-  // Passcode temporarily disabled — always unlocked.
-  return { unlocked: true };
+  const session = await useSession<GateSession>(sessionConfig());
+  return { unlocked: !!session.data.unlocked };
 });
 
-
 export const unlockAlbum = createServerFn({ method: "POST" })
-  .inputValidator((data: { passcode?: string }) => data ?? {})
-  .handler(async () => {
-    // Passcode temporarily disabled — opens directly.
+  .inputValidator((data: { passcode: string }) => data)
+  .handler(async ({ data }) => {
+    const expected = process.env.ALBUM_PASSCODE;
+    if (!expected) throw new Error("ALBUM_PASSCODE is not set");
+    if (!passwordMatches(data.passcode ?? "", expected)) {
+      return { ok: false as const };
+    }
     const session = await useSession<GateSession>(sessionConfig());
     await session.update({ unlocked: true });
     return { ok: true as const };
   });
-
 
 export const lockAlbum = createServerFn({ method: "POST" }).handler(async () => {
   const session = await useSession<GateSession>(sessionConfig());

@@ -17,10 +17,11 @@ function sessionConfig() {
 }
 
 async function requireUnlocked() {
-  // Passcode temporarily disabled — always unlocked.
-  return;
+  const session = await useSession<GateSession>(sessionConfig());
+  if (!session.data.unlocked) {
+    throw new Error("locked");
+  }
 }
-
 
 function publicClient() {
   return createClient<Database>(
