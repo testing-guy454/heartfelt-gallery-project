@@ -1,24 +1,30 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 
-// No head() here: the home route inherits title/description/og/twitter from
-// __root.tsx, and ships no og:image so serve-time hosting can inject the
-// project's social preview (explicit og:image or latest screenshot).
 export const Route = createFileRoute("/")({
-  component: Index,
+  component: Cover,
 });
 
-// IMPORTANT: Replace this placeholder. See ./README.md for routing conventions.
-function Index() {
+function Cover() {
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
+    <div className="min-h-screen flex items-center justify-center px-6">
+      <div className="max-w-xl text-center paper rounded-2xl px-10 py-16">
+        <p className="hand text-2xl text-primary/80">for you,</p>
+        <h1 className="serif text-6xl md:text-7xl mt-3 text-ink italic">Our Album</h1>
+        <div className="gold-divider my-6 mx-auto w-40" />
+        <p className="text-muted-foreground leading-relaxed">
+          Every quiet morning, every messy laugh, every somewhere-we-got-lost.
+          A little home for the moments I never want to forget.
+        </p>
+        <div className="mt-10">
+          <Link
+            to="/unlock"
+            className="inline-flex items-center rounded-full bg-primary text-primary-foreground px-8 py-3 text-sm tracking-wide uppercase shadow-md hover:shadow-lg transition"
+          >
+            Open the album
+          </Link>
+        </div>
+        <p className="hand text-xl mt-8 text-primary/70">— always yours</p>
+      </div>
     </div>
   );
 }

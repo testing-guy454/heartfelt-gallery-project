@@ -9,38 +9,161 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as UnlockRouteImport } from './routes/unlock'
+import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as AlbumIndexRouteImport } from './routes/album.index'
+import { Route as AlbumTimelineRouteImport } from './routes/album.timeline'
+import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
+import { Route as AlbumCSlugRouteImport } from './routes/album.c.$slug'
+import { Route as AuthenticatedAdminChaptersIdRouteImport } from './routes/_authenticated/admin.chapters.$id'
 
+const UnlockRoute = UnlockRouteImport.update({
+  id: '/unlock',
+  path: '/unlock',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthRoute = AuthRouteImport.update({
+  id: '/auth',
+  path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
+  id: '/_authenticated',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AlbumIndexRoute = AlbumIndexRouteImport.update({
+  id: '/album/',
+  path: '/album/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AlbumTimelineRoute = AlbumTimelineRouteImport.update({
+  id: '/album/timeline',
+  path: '/album/timeline',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
+  id: '/admin/',
+  path: '/admin/',
+  getParentRoute: () => AuthenticatedRouteRoute,
+} as any)
+const AlbumCSlugRoute = AlbumCSlugRouteImport.update({
+  id: '/album/c/$slug',
+  path: '/album/c/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AuthenticatedAdminChaptersIdRoute =
+  AuthenticatedAdminChaptersIdRouteImport.update({
+    id: '/admin/chapters/$id',
+    path: '/admin/chapters/$id',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/unlock': typeof UnlockRoute
+  '/album/timeline': typeof AlbumTimelineRoute
+  '/album/': typeof AlbumIndexRoute
+  '/album/c/$slug': typeof AlbumCSlugRoute
+  '/admin/': typeof AuthenticatedAdminIndexRoute
+  '/admin/chapters/$id': typeof AuthenticatedAdminChaptersIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/auth': typeof AuthRoute
+  '/unlock': typeof UnlockRoute
+  '/album/timeline': typeof AlbumTimelineRoute
+  '/album': typeof AlbumIndexRoute
+  '/album/c/$slug': typeof AlbumCSlugRoute
+  '/admin': typeof AuthenticatedAdminIndexRoute
+  '/admin/chapters/$id': typeof AuthenticatedAdminChaptersIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/auth': typeof AuthRoute
+  '/unlock': typeof UnlockRoute
+  '/album/timeline': typeof AlbumTimelineRoute
+  '/album/': typeof AlbumIndexRoute
+  '/album/c/$slug': typeof AlbumCSlugRoute
+  '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
+  '/_authenticated/admin/chapters/$id': typeof AuthenticatedAdminChaptersIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/'
+  fullPaths:
+    | '/'
+    | '/auth'
+    | '/unlock'
+    | '/album/timeline'
+    | '/album/'
+    | '/album/c/$slug'
+    | '/admin/'
+    | '/admin/chapters/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/'
-  id: '__root__' | '/'
+  to:
+    | '/'
+    | '/auth'
+    | '/unlock'
+    | '/album/timeline'
+    | '/album'
+    | '/album/c/$slug'
+    | '/admin'
+    | '/admin/chapters/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/_authenticated'
+    | '/auth'
+    | '/unlock'
+    | '/album/timeline'
+    | '/album/'
+    | '/album/c/$slug'
+    | '/_authenticated/admin/'
+    | '/_authenticated/admin/chapters/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AuthRoute: typeof AuthRoute
+  UnlockRoute: typeof UnlockRoute
+  AlbumTimelineRoute: typeof AlbumTimelineRoute
+  AlbumIndexRoute: typeof AlbumIndexRoute
+  AlbumCSlugRoute: typeof AlbumCSlugRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/unlock': {
+      id: '/unlock'
+      path: '/unlock'
+      fullPath: '/unlock'
+      preLoaderRoute: typeof UnlockRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/auth': {
+      id: '/auth'
+      path: '/auth'
+      fullPath: '/auth'
+      preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated': {
+      id: '/_authenticated'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof AuthenticatedRouteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -48,11 +171,65 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/album/': {
+      id: '/album/'
+      path: '/album'
+      fullPath: '/album/'
+      preLoaderRoute: typeof AlbumIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/album/timeline': {
+      id: '/album/timeline'
+      path: '/album/timeline'
+      fullPath: '/album/timeline'
+      preLoaderRoute: typeof AlbumTimelineRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/admin/': {
+      id: '/_authenticated/admin/'
+      path: '/admin'
+      fullPath: '/admin/'
+      preLoaderRoute: typeof AuthenticatedAdminIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
+    '/album/c/$slug': {
+      id: '/album/c/$slug'
+      path: '/album/c/$slug'
+      fullPath: '/album/c/$slug'
+      preLoaderRoute: typeof AlbumCSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_authenticated/admin/chapters/$id': {
+      id: '/_authenticated/admin/chapters/$id'
+      path: '/admin/chapters/$id'
+      fullPath: '/admin/chapters/$id'
+      preLoaderRoute: typeof AuthenticatedAdminChaptersIdRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
   }
 }
 
+interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
+  AuthenticatedAdminChaptersIdRoute: typeof AuthenticatedAdminChaptersIdRoute
+}
+
+const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
+  AuthenticatedAdminChaptersIdRoute: AuthenticatedAdminChaptersIdRoute,
+}
+
+const AuthenticatedRouteRouteWithChildren =
+  AuthenticatedRouteRoute._addFileChildren(AuthenticatedRouteRouteChildren)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AuthRoute: AuthRoute,
+  UnlockRoute: UnlockRoute,
+  AlbumTimelineRoute: AlbumTimelineRoute,
+  AlbumIndexRoute: AlbumIndexRoute,
+  AlbumCSlugRoute: AlbumCSlugRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
