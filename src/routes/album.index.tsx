@@ -137,7 +137,7 @@ function ChapterEntry({
     <Link
       to="/album/c/$slug"
       params={{ slug: c.slug }}
-      className={`group relative block rise-${Math.min((i % 4) + 2, 5)} transition duration-500 hover:-translate-y-1.5 hover:rotate-0`}
+      className={`chapter-cell group relative block rise-${Math.min((i % 4) + 2, 5)} transition duration-500 hover:-translate-y-1.5 hover:rotate-0`}
       style={{
         gridColumnStart: l.colStart,
         gridColumnEnd: `span ${l.colSpan}`,
