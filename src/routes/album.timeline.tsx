@@ -8,7 +8,7 @@ export const Route = createFileRoute("/album/timeline")({
     try {
       return await listTimeline();
     } catch {
-      throw redirect({ to: "/" });
+      throw redirect({ to: "/unlock" });
     }
   },
   component: Timeline,
