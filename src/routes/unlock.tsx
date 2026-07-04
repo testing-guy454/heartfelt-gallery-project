@@ -2,7 +2,6 @@ import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState } from "react";
 import { unlockAlbum, isAlbumUnlocked } from "@/lib/gate.functions";
-import { FloatingPetals, Sprig } from "@/components/album/Ornaments";
 
 export const Route = createFileRoute("/unlock")({
   loader: async () => await isAlbumUnlocked(),
@@ -45,149 +44,253 @@ function Unlock() {
   }
 
   return (
-    <div className="relative min-h-screen flex items-center justify-center px-5 py-16 overflow-hidden">
-      <FloatingPetals />
-
-      <Sprig className="hidden md:block absolute left-4 bottom-8 w-28 h-40 text-[color:var(--gold)]/50 rotate-[-14deg]" />
-      <Sprig
-        flip
-        className="hidden md:block absolute right-4 top-10 w-24 h-36 text-[color:var(--gold)]/45 rotate-[12deg]"
+    <div
+      className="relative min-h-screen flex items-center justify-center px-4 py-16 overflow-hidden"
+      style={{
+        background:
+          "radial-gradient(ellipse at 30% 20%, #4a3628 0%, #2a1c14 55%, #180f0a 100%)",
+      }}
+    >
+      {/* wood grain / desk texture */}
+      <div
+        className="pointer-events-none absolute inset-0 opacity-60 mix-blend-overlay"
+        style={{
+          backgroundImage:
+            "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='600' height='600'><filter id='w'><feTurbulence type='turbulence' baseFrequency='0.012 0.7' numOctaves='2' seed='7'/><feColorMatrix values='0 0 0 0 0.28 0 0 0 0 0.18 0 0 0 0 0.1 0 0 0 0.55 0'/></filter><rect width='100%25' height='100%25' filter='url(%23w)'/></svg>\")",
+        }}
+      />
+      {/* soft vignette */}
+      <div
+        className="pointer-events-none absolute inset-0"
+        style={{
+          background:
+            "radial-gradient(ellipse at 50% 50%, transparent 40%, rgba(0,0,0,0.55) 100%)",
+        }}
+      />
+      {/* out-of-frame blurred silhouette like the reference */}
+      <div
+        className="pointer-events-none absolute -left-24 top-1/3 w-72 h-96 rounded-full opacity-40 blur-3xl"
+        style={{ background: "radial-gradient(circle, #1a0f08, transparent 70%)" }}
       />
 
       <form
         onSubmit={onSubmit}
-        className={`relative w-full max-w-md rise-1 ${error ? "shake" : ""}`}
-        style={{ transform: "rotate(-0.8deg)" }}
+        className={`relative w-full max-w-lg ${error ? "shake" : ""}`}
+        style={{ perspective: "1400px" }}
       >
-        {/* vintage letter paper */}
-        <div className="relative bg-[color:var(--letter-paper)] border border-[color:var(--sepia)]/25 px-9 py-12 sm:px-12 sm:py-14 shadow-[0_24px_60px_-30px_rgba(80,40,30,0.45),0_2px_6px_rgba(80,40,30,0.12)] letter-paper">
-          {/* aged grain overlay */}
+        {/* drop shadow beneath the letter */}
+        <div
+          aria-hidden
+          className="absolute inset-0 translate-y-6 blur-3xl opacity-70"
+          style={{ background: "radial-gradient(ellipse at 50% 60%, rgba(0,0,0,0.75), transparent 65%)" }}
+        />
+
+        <div
+          className="relative aged-letter"
+          style={{ transform: "rotate(-1.2deg)" }}
+        >
+          {/* base paper */}
           <div
-            className="pointer-events-none absolute inset-0 opacity-50 mix-blend-multiply"
+            className="relative px-9 py-14 sm:px-14 sm:py-16"
             style={{
-              backgroundImage:
-                "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='320' height='320'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='4'/><feColorMatrix values='0 0 0 0 0.32 0 0 0 0 0.22 0 0 0 0 0.14 0 0 0 0.14 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>\")",
+              background:
+                "radial-gradient(ellipse at 20% 15%, #f2e2b8 0%, #e8d3a0 35%, #d9bd82 70%, #b89460 100%)",
             }}
-          />
-
-          {/* fold creases */}
-          <div className="pointer-events-none absolute left-0 right-0 top-1/2 h-px bg-gradient-to-r from-transparent via-[color:var(--sepia)]/25 to-transparent" />
-          <div className="pointer-events-none absolute top-0 bottom-0 left-1/2 w-px bg-gradient-to-b from-transparent via-[color:var(--sepia)]/15 to-transparent" />
-
-          {/* tea stain spots */}
-          <div className="pointer-events-none absolute top-8 right-10 w-24 h-24 rounded-full bg-[color:var(--sepia)]/10 blur-2xl" />
-          <div className="pointer-events-none absolute bottom-16 left-8 w-16 h-16 rounded-full bg-[color:var(--rose-deep)]/8 blur-xl" />
-
-          {/* deckled edge mask */}
-          <div className="pointer-events-none absolute inset-0 deckled" />
-
-          {/* faint letter lines */}
-          <div
-            className="pointer-events-none absolute inset-0 opacity-[0.08]"
-            style={{
-              backgroundImage:
-                "repeating-linear-gradient(0deg, transparent, transparent 31px, var(--sepia) 31px, var(--sepia) 32px)",
-              backgroundPosition: "0 88px",
-            }}
-          />
-
-          {/* thin inner frame with corner leaves */}
-          <div className="pointer-events-none absolute inset-3 border border-[color:var(--gold)]/35">
-            <CornerLeaf className="absolute -top-1.5 -left-1.5" />
-            <CornerLeaf className="absolute -top-1.5 -right-1.5 rotate-90" />
-            <CornerLeaf className="absolute -bottom-1.5 -left-1.5 -rotate-90" />
-            <CornerLeaf className="absolute -bottom-1.5 -right-1.5 rotate-180" />
-          </div>
-
-          {/* small postmark */}
-          <div className="absolute top-5 right-5 sm:top-6 sm:right-6 flex items-center justify-center w-16 h-16 border border-[color:var(--sepia)]/30 rounded-full rotate-12 opacity-75">
-            <div className="flex flex-col items-center text-[color:var(--sepia)]/80">
-              <span className="stamp-font text-[0.48rem] tracking-[0.2em] uppercase">love</span>
-              <svg width="14" height="14" viewBox="0 0 14 14" className="my-0.5">
-                <path d="M7 12S2.5 9 2.5 5.5C2.5 3.5 4 2.5 5.5 2.5c.8 0 1.4.4 1.5.8.3-.4.8-.8 1.5-.8C10 2.5 11.5 3.5 11.5 5.5 11.5 9 7 12 7 12z" fill="currentColor" />
-              </svg>
-              <span className="stamp-font text-[0.4rem] tracking-[0.15em] uppercase">No. 01</span>
-            </div>
-          </div>
-
-          {/* eyebrow */}
-          <p className="text-center stamp-font text-[0.62rem] tracking-[0.45em] text-[color:var(--sepia)] uppercase">
-            Private
-          </p>
-
-          {/* headline */}
-          <h1 className="mt-6 serif italic text-[2.75rem] sm:text-6xl text-center text-[color:var(--rose-deep)] leading-[0.95]">
-            Say the word
-          </h1>
-
-          {/* ornament divider */}
-          <div className="mt-6 flex items-center justify-center gap-3 text-[color:var(--gold)]/70">
-            <span className="h-px w-14 bg-current" />
-            <svg width="12" height="12" viewBox="0 0 12 12" aria-hidden>
-              <path
-                d="M6 11S1 7.5 1 4.2C1 2.4 2.4 1 4.2 1c.9 0 1.5.4 1.8 1 .3-.6.9-1 1.8-1C9.6 1 11 2.4 11 4.2 11 7.5 6 11 6 11z"
-                fill="currentColor"
-              />
-            </svg>
-            <span className="h-px w-14 bg-current" />
-          </div>
-
-          <p className="mt-5 text-center italic text-[15px] text-muted-foreground max-w-xs mx-auto leading-relaxed">
-            A quiet word between us opens what's inside.
-          </p>
-
-          {/* input */}
-          <div className="mt-10">
-            <label
-              htmlFor="passcode"
-              className="block text-center stamp-font text-[0.6rem] tracking-[0.42em] text-[color:var(--sepia)]/85 uppercase mb-3"
-            >
-              whisper it here
-            </label>
-            <input
-              id="passcode"
-              ref={inputRef}
-              name="passcode"
-              type="password"
-              autoComplete="off"
-              value={value}
-              onChange={(e) => {
-                setValue(e.target.value);
-                if (error) setError(false);
+          >
+            {/* burn / darkened edges */}
+            <div
+              className="pointer-events-none absolute inset-0"
+              style={{
+                background:
+                  "radial-gradient(ellipse at center, transparent 45%, rgba(90,50,20,0.55) 100%)",
+                mixBlendMode: "multiply",
               }}
-              placeholder="our word"
-              className="relative z-10 w-full bg-transparent text-center font-serif italic text-2xl sm:text-[1.75rem] text-ink px-2 py-3 border-b border-[color:var(--sepia)]/45 focus:border-[color:var(--rose-deep)] outline-none transition-colors tracking-[0.18em] caret-[color:var(--rose-deep)] placeholder:text-[color:var(--sepia)]/45 placeholder:italic placeholder:tracking-[0.18em]"
             />
 
-            <div className="min-h-[1.5rem] mt-3 text-center relative z-10">
-              {error ? (
-                <p className="text-sm italic text-destructive">
-                  Not quite. Try again.
-                </p>
-              ) : (
-                <p className="text-xs italic text-muted-foreground/80">
-                  the one only you would guess
-                </p>
-              )}
+            {/* fibrous paper grain */}
+            <div
+              className="pointer-events-none absolute inset-0 opacity-70 mix-blend-multiply"
+              style={{
+                backgroundImage:
+                  "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='400' height='400'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='1.4' numOctaves='2' seed='3'/><feColorMatrix values='0 0 0 0 0.38 0 0 0 0 0.25 0 0 0 0 0.12 0 0 0 0.35 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>\")",
+              }}
+            />
+
+            {/* horizontal fold shadows */}
+            <div
+              className="pointer-events-none absolute left-0 right-0 top-[33%] h-6"
+              style={{
+                background:
+                  "linear-gradient(to bottom, transparent, rgba(80,45,20,0.28), transparent)",
+              }}
+            />
+            <div
+              className="pointer-events-none absolute left-0 right-0 top-[66%] h-6"
+              style={{
+                background:
+                  "linear-gradient(to bottom, transparent, rgba(80,45,20,0.22), transparent)",
+              }}
+            />
+            {/* vertical center fold */}
+            <div
+              className="pointer-events-none absolute top-0 bottom-0 left-1/2 w-8 -translate-x-1/2"
+              style={{
+                background:
+                  "linear-gradient(to right, transparent, rgba(60,35,15,0.18), transparent)",
+              }}
+            />
+
+            {/* fold crease highlights (sharp lines) */}
+            <div className="pointer-events-none absolute left-0 right-0 top-[33%] h-px bg-[rgba(255,240,200,0.35)]" />
+            <div className="pointer-events-none absolute left-0 right-0 top-[66%] h-px bg-[rgba(255,240,200,0.28)]" />
+
+            {/* tea stains */}
+            <div
+              className="pointer-events-none absolute top-6 right-14 w-28 h-24 rounded-full opacity-60 blur-xl"
+              style={{ background: "radial-gradient(circle, #7a4a1e, transparent 65%)" }}
+            />
+            <div
+              className="pointer-events-none absolute bottom-10 left-6 w-24 h-24 rounded-full opacity-50 blur-xl"
+              style={{ background: "radial-gradient(circle, #6b3d18, transparent 70%)" }}
+            />
+            <div
+              className="pointer-events-none absolute top-1/2 left-1/3 w-16 h-12 rounded-full opacity-40 blur-lg"
+              style={{ background: "radial-gradient(circle, #8a5622, transparent 70%)" }}
+            />
+
+            {/* content — handwritten letter */}
+            <div className="relative z-10" style={{ color: "#2b1608" }}>
+              <p
+                className="text-right text-[13px] italic opacity-70"
+                style={{ fontFamily: "var(--font-hand)" }}
+              >
+                somewhere, sometime ·
+              </p>
+
+              <p
+                className="mt-6 text-[26px] sm:text-[28px] leading-tight"
+                style={{ fontFamily: "var(--font-hand)", transform: "rotate(-0.4deg)" }}
+              >
+                my dearest,
+              </p>
+
+              <p
+                className="mt-4 text-[19px] sm:text-[21px] leading-[1.55] opacity-90"
+                style={{ fontFamily: "var(--font-hand)" }}
+              >
+                what waits behind these pages is only ours.
+                <br />
+                whisper the word we share, and it will open —
+                <br />
+                as it always has, as it always will.
+              </p>
+
+              {/* input as if writing on the letter */}
+              <div className="mt-10">
+                <label
+                  htmlFor="passcode"
+                  className="block text-[15px] italic opacity-70 mb-1"
+                  style={{ fontFamily: "var(--font-hand)" }}
+                >
+                  our word —
+                </label>
+                <input
+                  id="passcode"
+                  ref={inputRef}
+                  name="passcode"
+                  type="password"
+                  autoComplete="off"
+                  value={value}
+                  onChange={(e) => {
+                    setValue(e.target.value);
+                    if (error) setError(false);
+                  }}
+                  placeholder="……………………"
+                  className="w-full bg-transparent text-[28px] sm:text-[32px] outline-none py-1 tracking-wider"
+                  style={{
+                    fontFamily: "var(--font-hand)",
+                    color: "#2b1608",
+                    borderBottom: "1px dashed rgba(60,30,10,0.5)",
+                    caretColor: "#2b1608",
+                  }}
+                />
+
+                <div className="min-h-[1.5rem] mt-2">
+                  {error ? (
+                    <p
+                      className="text-[16px] italic"
+                      style={{ fontFamily: "var(--font-hand)", color: "#8a2a1a" }}
+                    >
+                      not the word. try once more, love.
+                    </p>
+                  ) : (
+                    <p
+                      className="text-[15px] italic opacity-60"
+                      style={{ fontFamily: "var(--font-hand)" }}
+                    >
+                      the one only you would guess.
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              {/* signature + wax "button" */}
+              <div className="mt-10 flex items-end justify-between gap-6">
+                <div>
+                  <p
+                    className="text-[22px] leading-none"
+                    style={{
+                      fontFamily: "var(--font-hand)",
+                      transform: "rotate(-3deg)",
+                      display: "inline-block",
+                    }}
+                  >
+                    yours,
+                  </p>
+                  <p
+                    className="mt-1 text-[30px] leading-none"
+                    style={{
+                      fontFamily: "var(--font-hand)",
+                      transform: "rotate(-2deg)",
+                      display: "inline-block",
+                    }}
+                  >
+                    always ♡
+                  </p>
+                </div>
+
+                <button
+                  type="submit"
+                  disabled={loading || !value.trim()}
+                  aria-label={loading ? "opening" : "open the letter"}
+                  className="group relative shrink-0 disabled:opacity-50 disabled:cursor-not-allowed transition-transform hover:-rotate-6"
+                  style={{ transform: "rotate(-8deg)" }}
+                >
+                  {/* wax seal */}
+                  <span
+                    className="flex items-center justify-center w-20 h-20 rounded-full text-[color:var(--primary-foreground)] shadow-[0_6px_14px_-4px_rgba(0,0,0,0.55),inset_0_-6px_10px_rgba(0,0,0,0.35),inset_0_4px_8px_rgba(255,255,255,0.18)]"
+                    style={{
+                      background:
+                        "radial-gradient(circle at 35% 30%, #b83a4a 0%, #8a1a2a 55%, #5a0e1c 100%)",
+                    }}
+                  >
+                    <span
+                      className="text-[13px] uppercase tracking-[0.2em] leading-none text-center"
+                      style={{ fontFamily: "var(--font-stamp)" }}
+                    >
+                      {loading ? "…" : "open"}
+                    </span>
+                  </span>
+                </button>
+              </div>
+
+              <p
+                className="mt-8 text-right text-[13px] italic opacity-55"
+                style={{ fontFamily: "var(--font-hand)" }}
+              >
+                p.s. do not read this without me nearby.
+              </p>
             </div>
-          </div>
-
-          {/* action */}
-          <div className="mt-8 flex flex-col items-center gap-4">
-            <button
-              type="submit"
-              disabled={loading || !value.trim()}
-              className="group inline-flex items-center gap-3 px-8 py-3 rounded-full bg-[color:var(--rose-deep)] text-[color:var(--primary-foreground)] text-[0.72rem] tracking-[0.32em] uppercase font-medium transition-all duration-300 hover:bg-[color:var(--pink-vivid)] hover:shadow-[0_20px_40px_-18px_color-mix(in_oklab,var(--rose-deep)_70%,transparent)] disabled:opacity-50 disabled:cursor-not-allowed"
-            >
-              <span>{loading ? "opening" : "enter"}</span>
-              <svg width="16" height="10" viewBox="0 0 16 10" fill="none" className="transition-transform group-hover:translate-x-1">
-                <path d="M1 5h13m0 0L10 1m4 4l-4 4" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </button>
-
-            <p className="stamp-font text-[0.58rem] tracking-[0.4em] text-[color:var(--sepia)]/70 uppercase">
-              No. 01 · for two
-            </p>
           </div>
         </div>
       </form>
@@ -195,55 +298,26 @@ function Unlock() {
       <style>{`
         @keyframes shakeX {
           0%,100% { transform: translateX(0); }
-          20% { transform: translateX(-6px); }
-          40% { transform: translateX(6px); }
-          60% { transform: translateX(-4px); }
-          80% { transform: translateX(4px); }
+          20% { transform: translateX(-8px); }
+          40% { transform: translateX(8px); }
+          60% { transform: translateX(-5px); }
+          80% { transform: translateX(5px); }
         }
-        .shake { animation: shakeX 380ms ease; }
-        .letter-paper {
+        .shake { animation: shakeX 420ms ease; }
+
+        /* torn / deckled edges via layered clip-path + drop-shadow */
+        .aged-letter {
+          filter: drop-shadow(0 30px 40px rgba(0,0,0,0.55)) drop-shadow(0 4px 6px rgba(0,0,0,0.35));
+        }
+        .aged-letter > div {
           clip-path: polygon(
-            0% 1%, 2% 0%, 5% 1%, 8% 0%, 12% 1%, 16% 0%, 20% 1%, 24% 0%, 28% 1%, 32% 0%, 36% 1%, 40% 0%, 44% 1%, 48% 0%, 52% 1%, 56% 0%, 60% 1%, 64% 0%, 68% 1%, 72% 0%, 76% 1%, 80% 0%, 84% 1%, 88% 0%, 92% 1%, 96% 0%, 100% 1%,
-            100% 98%, 98% 100%, 95% 99%, 92% 100%, 88% 99%, 84% 100%, 80% 99%, 76% 100%, 72% 99%, 68% 100%, 64% 99%, 60% 100%, 56% 99%, 52% 100%, 48% 99%, 44% 100%, 40% 99%, 36% 100%, 32% 99%, 28% 100%, 24% 99%, 20% 100%, 16% 99%, 12% 100%, 8% 99%, 4% 100%, 0% 99%
+            1% 3%, 4% 0%, 9% 2%, 14% 0.5%, 19% 2.5%, 24% 0%, 29% 2%, 34% 0.5%, 39% 3%, 44% 0%, 49% 2%, 54% 1%, 59% 3%, 64% 0.5%, 69% 2.5%, 74% 0%, 79% 2%, 84% 0.5%, 89% 3%, 94% 0.5%, 98% 2%, 100% 5%,
+            99% 12%, 100% 22%, 98% 33%, 100% 44%, 99% 55%, 100% 66%, 98% 77%, 100% 88%, 99% 96%,
+            96% 100%, 91% 98%, 86% 100%, 81% 97.5%, 76% 100%, 71% 98%, 66% 99.5%, 61% 97%, 56% 100%, 51% 98%, 46% 99.5%, 41% 97%, 36% 100%, 31% 98%, 26% 99.5%, 21% 97%, 16% 100%, 11% 98%, 6% 99.5%, 2% 97%, 0% 92%,
+            1% 82%, 0% 71%, 2% 60%, 0% 49%, 1% 38%, 0% 27%, 2% 16%, 0% 8%
           );
         }
       `}</style>
     </div>
-  );
-}
-
-function CornerLeaf({ className = "" }: { className?: string }) {
-  return (
-    <svg
-      width="20"
-      height="20"
-      viewBox="0 0 20 20"
-      className={`text-[color:var(--gold)]/70 ${className}`}
-      fill="none"
-      aria-hidden
-    >
-      <path
-        d="M2 14C6 10 10 6 18 2"
-        stroke="currentColor"
-        strokeWidth="1.2"
-        strokeLinecap="round"
-      />
-      <path
-        d="M8 18C10 12 14 8 18 2"
-        stroke="currentColor"
-        strokeWidth="1.2"
-        strokeLinecap="round"
-        opacity="0.6"
-      />
-      <ellipse
-        cx="10"
-        cy="10"
-        rx="3"
-        ry="1.5"
-        transform="rotate(45 10 10)"
-        fill="currentColor"
-        opacity="0.5"
-      />
-    </svg>
   );
 }
