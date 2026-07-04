@@ -128,11 +128,11 @@ function ChapterEntry({
     <Link
       to="/album/c/$slug"
       params={{ slug: c.slug }}
-      className={`group relative block md:col-span-${l.colSpan} rise-${Math.min((i % 4) + 2, 5)} transition duration-500 hover:-translate-y-1.5 hover:rotate-0`}
+      className={`group relative block rise-${Math.min((i % 4) + 2, 5)} transition duration-500 hover:-translate-y-1.5 hover:rotate-0`}
       style={{
-        gridColumnStart: `var(--cs)`,
+        gridColumnStart: l.colStart,
+        gridColumnEnd: `span ${l.colSpan}`,
         transform: `rotate(${l.rotate}deg) translateY(${l.translateY}rem)`,
-        ["--cs" as any]: l.colStart,
       } as React.CSSProperties}
     >
       <div className="relative">
