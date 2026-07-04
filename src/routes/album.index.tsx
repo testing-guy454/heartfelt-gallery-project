@@ -17,7 +17,7 @@ export const Route = createFileRoute("/album/")({
     try {
       return await listChapters();
     } catch {
-      throw redirect({ to: "/unlock" });
+      throw redirect({ to: "/" });
     }
   },
   component: AlbumHome,
