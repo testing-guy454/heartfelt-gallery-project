@@ -85,7 +85,7 @@ function AlbumHome() {
         {chapters.length === 0 ? (
           <p className="text-center text-muted-foreground italic">No chapters yet.</p>
         ) : (
-          <div className="relative grid grid-cols-1 md:grid-cols-12 gap-y-16 md:gap-y-24 gap-x-6">
+          <div className="relative grid grid-cols-12 gap-y-16 md:gap-y-24 gap-x-4 md:gap-x-6">
             {/* faint ruled paper lines behind the whole spread */}
             <div
               className="pointer-events-none absolute inset-0 opacity-[0.06] hidden md:block"
@@ -108,6 +108,15 @@ function AlbumHome() {
           </div>
         )}
       </div>
+
+      <style>{`
+        @media (max-width: 767px) {
+          .chapter-cell {
+            grid-column: 1 / -1 !important;
+            transform: none !important;
+          }
+        }
+      `}</style>
     </div>
   );
 }
