@@ -1,5 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { FloatingPetals, HeartIcon, Sprig, CornerOrnament, Flourish } from "@/components/album/Ornaments";
+import {
+  FloatingPetals,
+  HeartIcon,
+  Sprig,
+  CornerOrnament,
+  Flourish,
+  PostageStamp,
+  Postmark,
+  Butterfly,
+} from "@/components/album/Ornaments";
 
 export const Route = createFileRoute("/")({
   component: Cover,
@@ -11,11 +20,13 @@ function Cover() {
       <FloatingPetals />
 
       {/* Side sprigs */}
-      <Sprig className="hidden md:block absolute left-6 top-16 w-24 text-[color:var(--rose-deep)]/40 rise-1" />
+      <Sprig className="hidden md:block absolute left-6 top-16 w-24 text-[color:var(--pink-vivid)]/50 rise-1" />
       <Sprig
         flip
-        className="hidden md:block absolute right-6 bottom-16 w-24 text-[color:var(--rose-deep)]/40 rise-2"
+        className="hidden md:block absolute right-6 bottom-16 w-24 text-[color:var(--pink-vivid)]/50 rise-2"
       />
+      <Butterfly className="hidden md:block absolute right-24 top-24 w-12 text-[color:var(--pink-vivid)]/70 animate-[sway_7s_ease-in-out_infinite]" />
+      <Butterfly className="hidden md:block absolute left-32 bottom-32 w-9 text-[color:var(--rose-deep)]/60 animate-[sway_9s_ease-in-out_infinite]" />
 
       <div className="relative z-10 max-w-xl w-full">
         {/* Envelope flap */}
@@ -25,7 +36,7 @@ function Cover() {
             style={{
               clipPath: "polygon(0 0, 100% 0, 50% 100%)",
               background:
-                "linear-gradient(180deg, color-mix(in oklab, var(--rose-deep) 92%, black), color-mix(in oklab, var(--rose-deep) 70%, black))",
+                "linear-gradient(180deg, color-mix(in oklab, var(--pink-vivid) 88%, black), color-mix(in oklab, var(--rose-deep) 80%, black))",
               filter: "drop-shadow(0 6px 10px color-mix(in oklab, var(--ink) 35%, transparent))",
             }}
           />
@@ -37,18 +48,33 @@ function Cover() {
           </div>
         </div>
 
-        {/* Letter body */}
-        <div className="paper-deep relative rounded-b-2xl px-8 md:px-14 pt-20 pb-14 text-center rise-3">
+        {/* Letter body — aged paper with folds, stains, stamps */}
+        <div className="aged-paper fold-crease relative rounded-b-2xl px-8 md:px-14 pt-24 pb-14 text-center rise-3 overflow-hidden">
           <CornerOrnament position="tl" />
           <CornerOrnament position="tr" />
           <CornerOrnament position="bl" />
           <CornerOrnament position="br" />
 
-          <p className="hand text-3xl text-[color:var(--rose-deep)]/80">for you, my love —</p>
+          {/* Postage stamp + postmark, tucked in the top-right */}
+          <div className="absolute top-5 right-5 flex flex-col items-end gap-2 z-10">
+            <div style={{ transform: "rotate(6deg)" }}>
+              <PostageStamp />
+            </div>
+            <Postmark city="Us · Always" label="Air Mail" />
+          </div>
+
+          {/* Handwritten address block, top-left */}
+          <div className="absolute top-6 left-6 text-left hand text-lg text-[color:var(--ink)]/70 leading-snug rotate-[-2deg] hidden md:block">
+            <div>To — my dearest,</div>
+            <div className="opacity-70">c/o the corner of my heart</div>
+            <div className="opacity-60">no. 143, forever lane</div>
+          </div>
+
+          <p className="hand text-3xl text-[color:var(--pink-vivid)]">for you, my love —</p>
 
           <h1 className="serif text-6xl md:text-7xl mt-3 text-ink italic leading-[1.05]">
             Our
-            <span className="mx-3 text-[color:var(--rose-deep)]">&amp;</span>
+            <span className="mx-3 text-[color:var(--pink-vivid)]">&amp;</span>
             Always
           </h1>
 
@@ -65,14 +91,14 @@ function Cover() {
               <HeartIcon className="w-4 h-4" />
               Open the album
             </Link>
-            <p className="hand text-xl text-[color:var(--rose-deep)]/70">
+            <p className="hand text-xl text-[color:var(--pink-vivid)]/90">
               — always, always yours
             </p>
           </div>
 
           <div className="gold-divider my-8 mx-auto w-40" />
-          <p className="text-xs uppercase tracking-[0.3em] text-muted-foreground/70">
-            a keepsake, hand-made
+          <p className="stamp-font text-[10px] uppercase tracking-[0.35em] text-[color:var(--sepia)]/80">
+            a keepsake · hand-made · no. 001
           </p>
         </div>
       </div>
