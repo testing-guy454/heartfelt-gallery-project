@@ -115,16 +115,6 @@
     mix-blend-mode: multiply;
     background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='240' height='240'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.2  0 0 0 0 0.12  0 0 0 0 0.1  0 0 0 0.09 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
   }
-  /* subtle horizontal fold crease across the page */
-  body::after {
-    content: "";
-    position: fixed; inset: 0;
-    pointer-events: none;
-    z-index: 0;
-    background:
-      linear-gradient(180deg, transparent 49.6%, color-mix(in oklab, var(--sepia) 18%, transparent) 49.9%, color-mix(in oklab, var(--sepia) 8%, transparent) 50.1%, transparent 50.4%);
-    opacity: 0.35;
-  }
   h1, h2, h3, .serif { font-family: var(--font-serif); letter-spacing: -0.01em; }
   .hand { font-family: var(--font-hand); }
   .stamp-font { font-family: var(--font-stamp); letter-spacing: 0.08em; }
