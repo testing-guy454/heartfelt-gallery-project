@@ -22,7 +22,7 @@ function Unlock() {
     if (unlocked) router.navigate({ to: "/album" });
   }, [unlocked, router]);
 
-  useEffect(() {
+  useEffect(() => {
     const t = setTimeout(() => inputRef.current?.focus(), 300);
     return () => clearTimeout(t);
   }, []);
