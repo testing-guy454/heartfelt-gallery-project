@@ -63,6 +63,7 @@ export type Database = {
           created_at: string
           id: string
           image_url: string
+          is_favorite: boolean
           sort_order: number
           taken_at: string | null
           title: string | null
@@ -73,6 +74,7 @@ export type Database = {
           created_at?: string
           id?: string
           image_url: string
+          is_favorite?: boolean
           sort_order?: number
           taken_at?: string | null
           title?: string | null
@@ -83,6 +85,7 @@ export type Database = {
           created_at?: string
           id?: string
           image_url?: string
+          is_favorite?: boolean
           sort_order?: number
           taken_at?: string | null
           title?: string | null
