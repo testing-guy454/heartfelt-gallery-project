@@ -8,70 +8,37 @@ export function HeartIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
-/** Vintage cameo: ornate oval frame around a little engraved camera */
-export function SealIcon({ size = 44 }: { size?: number }) {
-  const rose = "var(--rose-deep)";
-  const gold = "var(--gold)";
-  const ink = "color-mix(in oklab, var(--ink) 78%, transparent)";
+/** Quiet ink ampersand — a letterhead mark, nothing more */
+export function SealIcon({ size = 40 }: { size?: number }) {
   return (
     <svg
-      viewBox="0 0 100 110"
+      viewBox="0 0 40 40"
       width={size}
-      height={(size * 110) / 100}
+      height={size}
       className="shrink-0"
       aria-hidden
     >
-      <ellipse cx="50" cy="55" rx="40" ry="45" fill="none" stroke={gold} strokeWidth="2.2" />
-      <ellipse cx="50" cy="55" rx="36" ry="41" fill="none" stroke={gold} strokeWidth="0.7" opacity="0.7" />
-      <ellipse cx="50" cy="55" rx="33" ry="38" fill="none" stroke={gold} strokeWidth="0.8" strokeDasharray="0.6 2" opacity="0.85" />
-
-      <g stroke={gold} strokeWidth="1.1" fill="none" strokeLinecap="round">
-        <path d="M42 11 q4 -5 8 0 q4 -5 8 0" />
-        <path d="M46 14 q4 -3 8 0" />
-        <path d="M42 99 q4 5 8 0 q4 5 8 0" />
-      </g>
-      <g fill={gold} opacity="0.9">
-        <path d="M9 55 q-3 -4 0 -8 q4 2 4 8 q0 6 -4 8 q-3 -4 0 -8 z" />
-        <path d="M91 55 q3 -4 0 -8 q-4 2 -4 8 q0 6 4 8 q3 -4 0 -8 z" />
-      </g>
-
-      <g fill={gold} stroke={gold} strokeWidth="0.5">
-        <path d="M44 26 L46 22 L50 25 L54 22 L56 26 Z" />
-        <rect x="44" y="26" width="12" height="1.6" />
-        <circle cx="50" cy="21" r="0.9" fill={rose} />
-      </g>
-
-      <g stroke={ink} strokeWidth="0.7" fill="none" strokeLinecap="round" opacity="0.85">
-        <path d="M22 58 q6 -4 10 -1" />
-        <path d="M24 62 q6 -3 9 -1" />
-        <path d="M23 66 q6 -3 9 -1" />
-        <path d="M78 58 q-6 -4 -10 -1" />
-        <path d="M76 62 q-6 -3 -9 -1" />
-        <path d="M77 66 q-6 -3 -9 -1" />
-      </g>
-
-      <g fill={ink} stroke={ink} strokeWidth="0.6">
-        <rect x="36" y="52" width="28" height="18" rx="1.6" />
-        <rect x="42" y="49" width="16" height="4" rx="0.8" />
-        <rect x="55" y="47.5" width="3" height="2" rx="0.6" fill={rose} stroke="none" />
-        <rect x="43" y="50" width="3" height="2" fill="var(--background)" stroke={ink} strokeWidth="0.4" />
-      </g>
-      <g>
-        <circle cx="50" cy="61" r="6" fill="var(--background)" stroke={ink} strokeWidth="1" />
-        <circle cx="50" cy="61" r="4" fill={ink} />
-        <circle cx="50" cy="61" r="2" fill={rose} />
-        <circle cx="48.5" cy="59.5" r="0.7" fill="var(--background)" opacity="0.8" />
-      </g>
-
-      <g stroke={gold} strokeWidth="0.8" fill="none" strokeLinecap="round">
-        <path d="M32 82 L46 82" />
-        <path d="M54 82 L68 82" />
-        <circle cx="30" cy="82" r="0.8" fill={gold} />
-        <circle cx="70" cy="82" r="0.8" fill={gold} />
-      </g>
+      <text
+        x="20"
+        y="30"
+        textAnchor="middle"
+        fill="var(--rose-deep)"
+        style={{
+          fontFamily: "var(--font-serif)",
+          fontStyle: "italic",
+          fontWeight: 500,
+          fontSize: "34px",
+        }}
+      >
+        &amp;
+      </text>
       <path
-        d="M50 89 c -2.2 -3, -6 -2.6, -6 0.4 c 0 2.4, 3 4, 6 6 c 3 -2, 6 -3.6, 6 -6 c 0 -3, -3.8 -3.4, -6 -0.4 z"
-        fill={rose}
+        d="M6 36 Q 20 39 34 36"
+        fill="none"
+        stroke="var(--gold)"
+        strokeWidth="0.9"
+        strokeLinecap="round"
+        opacity="0.75"
       />
     </svg>
   );
