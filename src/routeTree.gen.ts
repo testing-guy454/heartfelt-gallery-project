@@ -17,6 +17,7 @@ import { Route as AlbumIndexRouteImport } from './routes/album.index'
 import { Route as AlbumTimelineRouteImport } from './routes/album.timeline'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AlbumCSlugRouteImport } from './routes/album.c.$slug'
+import { Route as AuthenticatedAdminChaptersIndexRouteImport } from './routes/_authenticated/admin.chapters.index'
 import { Route as AuthenticatedAdminChaptersIdRouteImport } from './routes/_authenticated/admin.chapters.$id'
 
 const UnlockRoute = UnlockRouteImport.update({
@@ -58,6 +59,12 @@ const AlbumCSlugRoute = AlbumCSlugRouteImport.update({
   path: '/album/c/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedAdminChaptersIndexRoute =
+  AuthenticatedAdminChaptersIndexRouteImport.update({
+    id: '/admin/chapters/',
+    path: '/admin/chapters/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminChaptersIdRoute =
   AuthenticatedAdminChaptersIdRouteImport.update({
     id: '/admin/chapters/$id',
@@ -74,6 +81,7 @@ export interface FileRoutesByFullPath {
   '/album/c/$slug': typeof AlbumCSlugRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/admin/chapters/$id': typeof AuthenticatedAdminChaptersIdRoute
+  '/admin/chapters/': typeof AuthenticatedAdminChaptersIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -84,6 +92,7 @@ export interface FileRoutesByTo {
   '/album/c/$slug': typeof AlbumCSlugRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/admin/chapters/$id': typeof AuthenticatedAdminChaptersIdRoute
+  '/admin/chapters': typeof AuthenticatedAdminChaptersIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -96,6 +105,7 @@ export interface FileRoutesById {
   '/album/c/$slug': typeof AlbumCSlugRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/admin/chapters/$id': typeof AuthenticatedAdminChaptersIdRoute
+  '/_authenticated/admin/chapters/': typeof AuthenticatedAdminChaptersIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -108,6 +118,7 @@ export interface FileRouteTypes {
     | '/album/c/$slug'
     | '/admin/'
     | '/admin/chapters/$id'
+    | '/admin/chapters/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -118,6 +129,7 @@ export interface FileRouteTypes {
     | '/album/c/$slug'
     | '/admin'
     | '/admin/chapters/$id'
+    | '/admin/chapters'
   id:
     | '__root__'
     | '/'
@@ -129,6 +141,7 @@ export interface FileRouteTypes {
     | '/album/c/$slug'
     | '/_authenticated/admin/'
     | '/_authenticated/admin/chapters/$id'
+    | '/_authenticated/admin/chapters/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -199,6 +212,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AlbumCSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/admin/chapters/': {
+      id: '/_authenticated/admin/chapters/'
+      path: '/admin/chapters'
+      fullPath: '/admin/chapters/'
+      preLoaderRoute: typeof AuthenticatedAdminChaptersIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/chapters/$id': {
       id: '/_authenticated/admin/chapters/$id'
       path: '/admin/chapters/$id'
@@ -212,11 +232,13 @@ declare module '@tanstack/react-router' {
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
   AuthenticatedAdminChaptersIdRoute: typeof AuthenticatedAdminChaptersIdRoute
+  AuthenticatedAdminChaptersIndexRoute: typeof AuthenticatedAdminChaptersIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
   AuthenticatedAdminChaptersIdRoute: AuthenticatedAdminChaptersIdRoute,
+  AuthenticatedAdminChaptersIndexRoute: AuthenticatedAdminChaptersIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
