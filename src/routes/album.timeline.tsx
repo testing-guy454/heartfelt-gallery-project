@@ -21,7 +21,7 @@ function seeded(n: number) {
 }
 const jitter = (i: number, spread: number) => (seeded(i) - 0.5) * spread * 2;
 
-const TAPES = ["pink-stripe", "dots", "kraft", "brown", "cream"] as const;
+const TAPES = ["washi-tape", "washi-tape-gold"] as const;
 
 function Timeline() {
   const photos = Route.useLoaderData();
@@ -125,7 +125,7 @@ function MonthCluster({ group, gi }: { group: { key: string; label: string; item
               >
                 {hasTape && (
                   <span
-                    className={`washi-tape washi-${tape}`}
+                    className={tape}
                     style={{
                       transform: `translateX(-50%) rotate(${jitter(seed + 6, 8)}deg)`,
                     }}
