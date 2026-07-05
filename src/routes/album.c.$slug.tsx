@@ -9,8 +9,28 @@ import {
   Sprig,
   PhotoCorners,
   Postmark,
+  PostageStamp,
   Butterfly,
 } from "@/components/album/Ornaments";
+
+// A small paperclip svg — one of the per-card embellishments.
+function Paperclip({ className = "" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 40 80" className={className} aria-hidden>
+      <path
+        d="M20 6 C 10 6, 6 14, 6 26 L 6 60 C 6 70, 14 74, 20 74 C 26 74, 32 70, 32 60 L 32 22 C 32 16, 28 12, 22 12 C 16 12, 14 16, 14 22 L 14 58"
+        fill="none"
+        stroke="color-mix(in oklab, var(--gold) 70%, #7a5a20)"
+        strokeWidth="2.6"
+        strokeLinecap="round"
+      />
+    </svg>
+  );
+}
+
+// One decoration per card, cycled by index. Keeps composition uncluttered.
+type Deco = "tape-cream" | "tape-gold" | "tape-pink" | "clip" | "stamp" | "corners" | "sprig";
+const DECOS: Deco[] = ["tape-cream", "clip", "tape-pink", "corners", "stamp", "tape-gold", "sprig"];
 
 export const Route = createFileRoute("/album/c/$slug")({
   loader: async ({ params }) => {
