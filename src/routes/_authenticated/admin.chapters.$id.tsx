@@ -280,12 +280,40 @@ function SortablePhotoRow({
       >
         ⋮⋮
       </button>
-      <img src={photo.image_url} alt="" className="w-28 h-28 rounded-md object-cover shrink-0" />
+      <div className="relative shrink-0">
+        <img src={photo.image_url} alt="" className="w-28 h-28 rounded-md object-cover" />
+        <button
+          type="button"
+          onClick={() => onUpdate({ is_favorite: !photo.is_favorite })}
+          aria-label={photo.is_favorite ? "Remove from favorites" : "Add to favorites"}
+          title={photo.is_favorite ? "Remove from favorites" : "Add to favorites"}
+          className="absolute top-1 right-1 w-7 h-7 rounded-full bg-background/90 border border-border flex items-center justify-center hover:scale-110 transition"
+        >
+          <svg
+            viewBox="0 0 24 24"
+            className="w-4 h-4"
+            fill={photo.is_favorite ? "currentColor" : "none"}
+            stroke="currentColor"
+            strokeWidth="1.8"
+            style={{ color: photo.is_favorite ? "var(--rose-deep, #B24A5E)" : "currentColor" }}
+          >
+            <path d="M12 21s-7-4.35-7-10a4 4 0 017-2.65A4 4 0 0119 11c0 5.65-7 10-7 10z" />
+          </svg>
+        </button>
+      </div>
       <div className="flex-1 space-y-2">
         <input defaultValue={photo.title ?? ""} placeholder="Title" onBlur={(e) => onUpdate({ title: e.target.value })} className="input" />
         <input type="date" defaultValue={photo.taken_at ?? ""} onBlur={(e) => onUpdate({ taken_at: e.target.value || null })} className="input" />
         <textarea defaultValue={photo.caption ?? ""} placeholder="Caption" rows={2} onBlur={(e) => onUpdate({ caption: e.target.value })} className="input" />
-        <div className="text-right">
+        <div className="flex items-center justify-between">
+          <label className="text-xs text-muted-foreground flex items-center gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={photo.is_favorite}
+              onChange={(e) => onUpdate({ is_favorite: e.target.checked })}
+            />
+            Favorite
+          </label>
           <button onClick={onDelete} className="text-xs text-destructive">Delete</button>
         </div>
       </div>
