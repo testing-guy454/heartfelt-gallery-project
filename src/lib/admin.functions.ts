@@ -123,6 +123,20 @@ export const deleteChapter = createServerFn({ method: "POST" })
     return { ok: true };
   });
 
+export const reorderChapters = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: { chapter_ids: string[] }) => data)
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context);
+    const results = await Promise.all(
+      data.chapter_ids.map((id, idx) =>
+        context.supabase.from("chapters").update({ sort_order: idx + 1 }).eq("id", id),
+      ),
+    );
+    for (const r of results) if (r.error) throw new Error(r.error.message);
+    return { ok: true };
+  });
+
 export const addPhoto = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: { chapter_id: string; image_url: string; title?: string; caption?: string; taken_at?: string | null }) => data)

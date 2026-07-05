@@ -87,6 +87,7 @@ function AdminHome() {
           <p className="text-sm text-muted-foreground">Manage chapters and photos.</p>
         </div>
         <div className="flex items-center gap-4 text-sm">
+          <Link to="/admin/chapters" className="text-primary underline">Manage chapters</Link>
           <Link to="/album" className="text-primary underline">View album</Link>
           <button onClick={signOut} className="text-muted-foreground">Sign out</button>
         </div>
