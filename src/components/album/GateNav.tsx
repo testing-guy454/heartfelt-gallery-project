@@ -29,7 +29,7 @@ export function GateNav() {
           className="group flex items-center gap-3 shrink-0"
           aria-label="Our Album — home"
         >
-          <span className="relative inline-flex items-center justify-center text-[color:var(--ink)] transition-transform duration-500 group-hover:scale-105 group-hover:rotate-3">
+          <span className="relative inline-flex items-center justify-center text-[color:var(--rose-deep)] transition-transform duration-500 group-hover:scale-105 group-hover:rotate-3">
             <SealIcon size={36} />
           </span>
           <span
