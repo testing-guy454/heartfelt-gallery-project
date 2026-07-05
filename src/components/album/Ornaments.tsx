@@ -9,71 +9,45 @@ export function HeartIcon(props: SVGProps<SVGSVGElement>) {
 }
 
 /** Victorian engraved seal monogram mark for the nav brand */
-export function SealIcon({ className = "", size = 40 }: { className?: string; size?: number }) {
+export function SealIcon({ size = 40 }: { size?: number }) {
   return (
     <svg
       viewBox="0 0 100 100"
       width={size}
       height={size}
-      className={`shrink-0 ${className}`}
+      className="shrink-0 drop-shadow-[2px_2px_0px_color-mix(in_oklab,var(--ink)_12%,transparent)]"
       aria-hidden
     >
-      {/* outer dotted ring */}
-      <circle
-        cx="50"
-        cy="50"
-        r="48"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="0.5"
-        strokeDasharray="2 1"
-        opacity="0.6"
+      {/* letterpress block background */}
+      <rect
+        x="4"
+        y="4"
+        width="92"
+        height="92"
+        rx="8"
+        ry="8"
+        fill="var(--rose-deep)"
       />
-      {/* inner solid ring */}
-      <circle
-        cx="50"
-        cy="50"
-        r="44"
+      {/* inner highlight border */}
+      <rect
+        x="10"
+        y="10"
+        width="80"
+        height="80"
+        rx="5"
+        ry="5"
         fill="none"
-        stroke="currentColor"
-        strokeWidth="1.5"
-        opacity="0.9"
-      />
-      {/* top flourishes */}
-      <path
-        d="M50 15 C55 15, 60 20, 60 25 M40 25 C40 20, 45 15, 50 15"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="0.75"
-        strokeLinecap="round"
-        opacity="0.7"
-      />
-      {/* bottom flourishes */}
-      <path
-        d="M50 85 C55 85, 60 80, 60 75 M40 75 C40 80, 45 85, 50 85"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="0.75"
-        strokeLinecap="round"
-        opacity="0.7"
-      />
-      {/* engraved heart detail */}
-      <path
-        d="M50 42 C50 42 47 38 44 38 C40 38 38 41 38 44 C38 49 50 58 50 58 C50 58 62 49 62 44 C62 41 60 38 56 38 C53 38 50 42 50 42"
-        fill="none"
-        stroke="currentColor"
+        stroke="var(--background)"
         strokeWidth="1"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-        opacity="0.8"
+        strokeOpacity="0.25"
       />
       {/* monogram */}
       <text
         x="50"
-        y="58"
+        y="62"
         textAnchor="middle"
-        fill="currentColor"
-        style={{ fontFamily: "var(--font-serif)", fontSize: "22px", fontWeight: 300, letterSpacing: "-1px" }}
+        fill="var(--background)"
+        style={{ fontFamily: "var(--font-serif)", fontSize: "44px", fontWeight: 600, letterSpacing: "-2px" }}
         className="select-none"
       >
         OA
