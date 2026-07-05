@@ -38,12 +38,6 @@ export function GateNav() {
           >
             Our Album
           </span>
-          <span
-            aria-hidden
-            className="hidden sm:inline text-[10px] uppercase tracking-[0.32em] text-[color:var(--gold)] ml-1"
-          >
-            · est. us
-          </span>
         </Link>
 
         {/* Nav — serif italic, hand-drawn hover underline, small gold dots */}
