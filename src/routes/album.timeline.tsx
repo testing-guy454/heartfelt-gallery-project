@@ -1,5 +1,4 @@
 import { createFileRoute, Link, redirect } from "@tanstack/react-router";
-import { useEffect, useMemo, useRef, useState } from "react";
 import { listTimeline } from "@/lib/album.functions";
 import { GateNav } from "@/components/album/GateNav";
 import { FloatingPetals, Flourish, HeartIcon } from "@/components/album/Ornaments";
@@ -15,100 +14,18 @@ export const Route = createFileRoute("/album/timeline")({
   component: Timeline,
 });
 
-const TILTS = [-3.4, 2.6, -1.8, 3.1, -2.4, 1.9, -3.0, 2.2];
+// Deterministic pseudo-random so SSR and client render identically.
+function seeded(n: number) {
+  const x = Math.sin(n * 9301 + 49297) * 233280;
+  return x - Math.floor(x); // 0..1
+}
+const jitter = (i: number, spread: number) => (seeded(i) - 0.5) * spread * 2;
 
-// Serpentine layout constants (SVG viewBox units)
-const VB_W = 1200;
-const CX = VB_W / 2;
-const AMP = 220;          // how far the curve swings from center
-const OFFSET = 260;       // extra distance from curve to polaroid pin
-const ROW_H = 380;        // vertical spacing per entry
-const TOP_PAD = 120;
-const BOT_PAD = 160;
+const TAPES = ["pink-stripe", "dots", "kraft", "brown", "cream"] as const;
 
 function Timeline() {
   const photos = Route.useLoaderData();
   const groups = groupByMonth(photos);
-
-  // Flatten into a single sequence of entries, injecting month markers.
-  type Node =
-    | { kind: "month"; key: string; label: string }
-    | { kind: "photo"; key: string; photo: any };
-  const nodes = useMemo<Node[]>(() => {
-    const out: Node[] = [];
-    for (const g of groups) {
-      out.push({ kind: "month", key: `m-${g.key}`, label: g.label });
-      for (const p of g.items) out.push({ kind: "photo", key: `p-${p.id}`, photo: p });
-    }
-    return out;
-  }, [groups]);
-
-  // Compute anchor points on the S-curve for each node
-  const anchors = useMemo(() => {
-    return nodes.map((_, i) => {
-      const y = TOP_PAD + i * ROW_H + ROW_H / 2;
-      const side = i % 2 === 0 ? -1 : 1; // -1 left, +1 right
-      const x = CX + side * AMP;
-      return { x, y, side };
-    });
-  }, [nodes]);
-
-  const totalH = TOP_PAD + nodes.length * ROW_H + BOT_PAD;
-
-  // Build the flowing S-curve path via cubic Bézier segments through anchors.
-  const pathD = useMemo(() => {
-    if (anchors.length === 0) return "";
-    let d = `M ${CX} 0`;
-    let prev = { x: CX, y: 0 };
-    for (const a of anchors) {
-      const midY = (prev.y + a.y) / 2;
-      d += ` C ${prev.x} ${midY}, ${a.x} ${midY}, ${a.x} ${a.y}`;
-      prev = a;
-    }
-    // tail back to center at bottom
-    const tailY = prev.y + ROW_H * 0.6;
-    d += ` C ${prev.x} ${tailY}, ${CX} ${tailY}, ${CX} ${totalH}`;
-    return d;
-  }, [anchors, totalH]);
-
-  // Draw-on-scroll for the main curve
-  const scrollRef = useRef<HTMLDivElement | null>(null);
-  const pathRef = useRef<SVGPathElement | null>(null);
-  const [visible, setVisible] = useState<Set<number>>(new Set());
-
-  useEffect(() => {
-    const el = scrollRef.current;
-    const path = pathRef.current;
-    if (!el || !path) return;
-    const len = path.getTotalLength();
-    path.style.strokeDasharray = `${len}`;
-    path.style.strokeDashoffset = `${len}`;
-
-    const onScroll = () => {
-      const rect = el.getBoundingClientRect();
-      const vh = window.innerHeight || 800;
-      // progress: 0 when top hits mid-viewport, 1 when bottom hits mid-viewport
-      const start = rect.top - vh * 0.55;
-      const span = rect.height;
-      const p = Math.min(1, Math.max(0, -start / span));
-      path.style.strokeDashoffset = `${len * (1 - p)}`;
-
-      // reveal polaroids as the line reaches their anchors
-      const next = new Set<number>();
-      for (let i = 0; i < anchors.length; i++) {
-        const y = anchors[i].y / totalH;
-        if (p >= y - 0.02) next.add(i);
-      }
-      setVisible((prev) => (prev.size === next.size ? prev : next));
-    };
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    window.addEventListener("resize", onScroll);
-    return () => {
-      window.removeEventListener("scroll", onScroll);
-      window.removeEventListener("resize", onScroll);
-    };
-  }, [anchors, totalH, pathD]);
 
   return (
     <div className="relative min-h-screen">
@@ -129,204 +46,138 @@ function Timeline() {
           </Link>
         </header>
 
-        {nodes.length === 0 ? (
+        {groups.length === 0 ? (
           <p className="text-center text-muted-foreground italic">No photos yet.</p>
         ) : (
-          <>
-            {/* Desktop / tablet: serpentine curve */}
-            <div
-              ref={scrollRef}
-              className="relative hidden md:block"
-              style={{ height: totalH * 0.62 /* scale factor visual */ }}
-            >
-              <svg
-                aria-hidden
-                viewBox={`0 0 ${VB_W} ${totalH}`}
-                preserveAspectRatio="none"
-                className="absolute inset-0 w-full h-full pointer-events-none"
-              >
-                {/* faint background curve so the drawn line rides on top */}
-                <path
-                  d={pathD}
-                  fill="none"
-                  stroke="color-mix(in oklab, var(--gold) 35%, transparent)"
-                  strokeWidth={1.2}
-                  strokeDasharray="2 8"
-                  vectorEffect="non-scaling-stroke"
-                />
-                {/* drawn curve */}
-                <path
-                  ref={pathRef}
-                  d={pathD}
-                  fill="none"
-                  stroke="color-mix(in oklab, var(--rose-deep) 70%, var(--gold))"
-                  strokeWidth={2}
-                  strokeLinecap="round"
-                  vectorEffect="non-scaling-stroke"
-                  style={{ transition: "stroke-dashoffset 120ms linear" }}
-                />
-                {/* strings from curve to each polaroid pin */}
-                {nodes.map((n, i) => {
-                  if (n.kind !== "photo") return null;
-                  const a = anchors[i];
-                  const pinX = a.x + a.side * OFFSET;
-                  const pinY = a.y + 40;
-                  const show = visible.has(i);
-                  return (
-                    <g key={`s-${i}`} style={{ opacity: show ? 1 : 0, transition: "opacity 500ms ease" }}>
-                      <path
-                        d={`M ${a.x} ${a.y} Q ${(a.x + pinX) / 2} ${a.y + 4}, ${pinX} ${pinY}`}
-                        fill="none"
-                        stroke="color-mix(in oklab, var(--ink) 55%, transparent)"
-                        strokeWidth={1.1}
-                        vectorEffect="non-scaling-stroke"
-                      />
-                      {/* knot at curve */}
-                      <circle
-                        cx={a.x}
-                        cy={a.y}
-                        r={5}
-                        fill="var(--rose-deep)"
-                        stroke="var(--letter-paper)"
-                        strokeWidth={1.5}
-                        vectorEffect="non-scaling-stroke"
-                      />
-                    </g>
-                  );
-                })}
-              </svg>
-
-              {/* Overlaid nodes positioned by % (matches SVG preserveAspectRatio="none") */}
-              {nodes.map((n, i) => {
-                const a = anchors[i];
-                if (n.kind === "month") {
-                  const leftPct = (CX / VB_W) * 100;
-                  const topPct = (a.y / totalH) * 100;
-                  return (
-                    <div
-                      key={n.key}
-                      className="absolute -translate-x-1/2 -translate-y-1/2"
-                      style={{ left: `${leftPct}%`, top: `${topPct}%` }}
-                    >
-                      <span className="inline-flex items-center gap-2 bg-[color:var(--letter-paper)] px-4 py-1 rounded-full border border-[color:var(--gold)]/50 shadow-sm">
-                        <HeartIcon className="w-3.5 h-3.5 text-[color:var(--rose-deep)]" />
-                        <span className="serif italic text-xl text-[color:var(--rose-deep)] whitespace-nowrap">
-                          {n.label}
-                        </span>
-                      </span>
-                    </div>
-                  );
-                }
-                const pinX = a.x + a.side * OFFSET;
-                const pinY = a.y + 40;
-                const leftPct = (pinX / VB_W) * 100;
-                const topPct = (pinY / totalH) * 100;
-                const tilt = TILTS[i % TILTS.length];
-                const show = visible.has(i);
-                const p = n.photo;
-                return (
-                  <article
-                    key={n.key}
-                    className="absolute -translate-x-1/2"
-                    style={{
-                      left: `${leftPct}%`,
-                      top: `${topPct}%`,
-                      width: "clamp(180px, 22vw, 260px)",
-                      opacity: show ? 1 : 0,
-                      transform: `translate(-50%, 0) rotate(${tilt}deg) translateY(${show ? 0 : 14}px)`,
-                      transition: "opacity 600ms ease, transform 700ms cubic-bezier(.22,1,.36,1)",
-                      transformOrigin: "top center",
-                      animation: show ? "sway 6s ease-in-out infinite" : undefined,
-                      animationDelay: `${(i % 4) * 0.4}s`,
-                    }}
-                  >
-                    <div className="polaroid rounded-sm">
-                      <img
-                        src={p.image_url}
-                        alt={p.title ?? ""}
-                        className="w-full aspect-[4/3] object-cover"
-                        loading="lazy"
-                      />
-                      <figcaption className="pt-2 pb-1 text-center">
-                        {p.title && (
-                          <h3 className="serif italic text-lg text-ink leading-tight">
-                            {p.title}
-                          </h3>
-                        )}
-                        {p.taken_at && (
-                          <p className="hand text-sm text-[color:var(--ink)]/60">
-                            {new Date(p.taken_at).toLocaleDateString(undefined, {
-                              day: "numeric",
-                              month: "short",
-                              year: "numeric",
-                            })}
-                          </p>
-                        )}
-                        {p.chapters?.slug && (
-                          <Link
-                            to="/album/c/$slug"
-                            params={{ slug: p.chapters.slug }}
-                            className="text-[9px] uppercase tracking-[0.25em] text-[color:var(--rose-deep)]/80 mt-1 inline-block"
-                          >
-                            {p.chapters.title}
-                          </Link>
-                        )}
-                      </figcaption>
-                    </div>
-                  </article>
-                );
-              })}
-            </div>
-
-            {/* Mobile fallback: simple stacked stream with a wavy accent */}
-            <div className="md:hidden space-y-12">
-              {groups.map((g) => (
-                <section key={g.key}>
-                  <div className="text-center mb-6">
-                    <span className="inline-flex items-center gap-2 bg-[color:var(--letter-paper)] px-4 py-1 rounded-full border border-[color:var(--gold)]/40">
-                      <HeartIcon className="w-3.5 h-3.5 text-[color:var(--rose-deep)]" />
-                      <span className="serif italic text-xl text-[color:var(--rose-deep)]">
-                        {g.label}
-                      </span>
-                    </span>
-                  </div>
-                  <div className="space-y-10">
-                    {g.items.map((p: any, i: number) => {
-                      const tilt = TILTS[i % TILTS.length];
-                      return (
-                        <article key={p.id} className="mx-auto max-w-xs">
-                          <div
-                            className="polaroid rounded-sm"
-                            style={{ transform: `rotate(${tilt}deg)` }}
-                          >
-                            <img
-                              src={p.image_url}
-                              alt={p.title ?? ""}
-                              className="w-full aspect-[4/3] object-cover"
-                              loading="lazy"
-                            />
-                            <figcaption className="pt-2 text-center">
-                              {p.title && (
-                                <h3 className="serif italic text-xl text-ink">{p.title}</h3>
-                              )}
-                              {p.caption && (
-                                <p className="hand text-base text-[color:var(--ink)]/70 mt-1 px-2">
-                                  {p.caption}
-                                </p>
-                              )}
-                            </figcaption>
-                          </div>
-                        </article>
-                      );
-                    })}
-                  </div>
-                </section>
-              ))}
-            </div>
-          </>
+          <div className="space-y-20">
+            {groups.map((g, gi) => (
+              <MonthCluster key={g.key} group={g} gi={gi} />
+            ))}
+          </div>
         )}
       </div>
     </div>
+  );
+}
+
+function MonthCluster({ group, gi }: { group: { key: string; label: string; items: any[] }; gi: number }) {
+  const bannerTilt = jitter(gi + 7, 2.5);
+  return (
+    <section className="relative">
+      {/* torn paper banner header */}
+      <div className="flex justify-center mb-10">
+        <div
+          className="relative inline-block px-8 py-2 bg-[color:var(--letter-paper)]"
+          style={{
+            transform: `rotate(${bannerTilt}deg)`,
+            boxShadow:
+              "0 10px 20px -14px rgba(0,0,0,0.35), 0 2px 0 rgba(0,0,0,0.05)",
+            clipPath:
+              "polygon(2% 12%, 8% 0, 22% 8%, 36% 2%, 52% 10%, 68% 0, 82% 8%, 96% 2%, 100% 18%, 98% 82%, 92% 98%, 78% 92%, 62% 100%, 46% 90%, 30% 98%, 16% 92%, 4% 100%, 0 84%)",
+          }}
+        >
+          {/* washi tape on top */}
+          <span
+            className="absolute -top-3 left-1/2 -translate-x-1/2 w-24 h-5 opacity-90"
+            style={{
+              background:
+                "repeating-linear-gradient(45deg, color-mix(in oklab, var(--rose-deep) 55%, white) 0 6px, color-mix(in oklab, var(--rose-deep) 30%, white) 6px 12px)",
+              transform: "rotate(-4deg)",
+              boxShadow: "0 2px 4px rgba(0,0,0,0.15)",
+            }}
+          />
+          <div className="flex items-center gap-3">
+            <HeartIcon className="w-4 h-4 text-[color:var(--rose-deep)]" />
+            <span className="serif italic text-3xl md:text-4xl text-[color:var(--rose-deep)] whitespace-nowrap">
+              {group.label}
+            </span>
+            <HeartIcon className="w-4 h-4 text-[color:var(--rose-deep)]" />
+          </div>
+        </div>
+      </div>
+
+      {/* pinned collage grid */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-y-10 gap-x-6 md:gap-x-8">
+        {group.items.map((p: any, i: number) => {
+          const seed = gi * 31 + i;
+          const rot = jitter(seed, 6.5); // -6.5..6.5 deg
+          const dx = jitter(seed + 1, 10); // px
+          const dy = jitter(seed + 2, 14);
+          const tape = TAPES[Math.floor(seeded(seed + 3) * TAPES.length)];
+          const hasTape = seeded(seed + 4) > 0.35;
+          const hasPin = !hasTape;
+          const raise = seeded(seed + 5) > 0.5 ? 6 : 0;
+          return (
+            <article
+              key={p.id}
+              className="group relative"
+              style={{
+                transform: `translate(${dx}px, ${dy - raise}px) rotate(${rot}deg)`,
+                transition: "transform 400ms cubic-bezier(.22,1,.36,1), z-index 0s",
+              }}
+            >
+              <div
+                className="polaroid rounded-sm relative group-hover:!scale-[1.06]"
+                style={{
+                  transformOrigin: "center top",
+                  transition: "transform 400ms cubic-bezier(.22,1,.36,1), box-shadow 400ms ease",
+                }}
+              >
+                {hasTape && (
+                  <span
+                    className={`washi-tape washi-${tape}`}
+                    style={{
+                      transform: `translateX(-50%) rotate(${jitter(seed + 6, 8)}deg)`,
+                    }}
+                  />
+                )}
+                {hasPin && (
+                  <span
+                    aria-hidden
+                    className="absolute -top-2 left-1/2 -translate-x-1/2 w-3 h-3 rounded-full z-10"
+                    style={{
+                      background:
+                        "radial-gradient(circle at 30% 30%, #ffb0b0, var(--rose-deep) 65%, #6a1f1f)",
+                      boxShadow:
+                        "0 2px 3px rgba(0,0,0,0.35), inset -1px -1px 2px rgba(0,0,0,0.25)",
+                    }}
+                  />
+                )}
+                <img
+                  src={p.image_url}
+                  alt={p.title ?? ""}
+                  className="w-full aspect-[4/3] object-cover"
+                  loading="lazy"
+                />
+                <figcaption className="pt-2 pb-1 text-center">
+                  {p.title && (
+                    <h3 className="serif italic text-lg text-ink leading-tight">{p.title}</h3>
+                  )}
+                  {p.taken_at && (
+                    <p className="hand text-sm text-[color:var(--ink)]/60">
+                      {new Date(p.taken_at).toLocaleDateString(undefined, {
+                        day: "numeric",
+                        month: "short",
+                        year: "numeric",
+                      })}
+                    </p>
+                  )}
+                  {p.chapters?.slug && (
+                    <Link
+                      to="/album/c/$slug"
+                      params={{ slug: p.chapters.slug }}
+                      className="text-[9px] uppercase tracking-[0.25em] text-[color:var(--rose-deep)]/80 mt-1 inline-block"
+                    >
+                      {p.chapters.title}
+                    </Link>
+                  )}
+                </figcaption>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    </section>
   );
 }
 
