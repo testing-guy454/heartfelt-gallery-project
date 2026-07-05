@@ -1,7 +1,7 @@
 import { Link, useRouter } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { lockAlbum } from "@/lib/gate.functions";
-import { HeartIcon } from "./Ornaments";
+import { SealIcon } from "./Ornaments";
 
 export function GateNav() {
   const router = useRouter();
@@ -26,11 +26,11 @@ export function GateNav() {
         {/* Brand — a small monogram, quiet and letterhead-like */}
         <Link
           to="/album"
-          className="group flex items-baseline gap-2.5 shrink-0"
+          className="group flex items-center gap-3 shrink-0"
           aria-label="Our Album — home"
         >
-          <span className="relative inline-flex items-center justify-center w-6 h-6 text-[color:var(--rose-deep)] transition-transform group-hover:-rotate-6">
-            <HeartIcon className="w-4 h-4" />
+          <span className="relative inline-flex items-center justify-center text-[color:var(--ink)] transition-transform duration-500 group-hover:scale-105 group-hover:rotate-3">
+            <SealIcon size={36} />
           </span>
           <span
             className="serif italic text-[19px] leading-none text-ink tracking-tight"
