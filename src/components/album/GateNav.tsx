@@ -1,7 +1,7 @@
 import { Link, useRouter } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { lockAlbum } from "@/lib/gate.functions";
-import { HeartIcon } from "./Ornaments";
+import { SealIcon } from "./Ornaments";
 
 export function GateNav() {
   const router = useRouter();
