@@ -392,12 +392,6 @@
     0 26px 44px -24px color-mix(in oklab, var(--ink) 55%, transparent),
     0 8px 18px -10px color-mix(in oklab, var(--sepia) 45%, transparent);
   position: relative;
-  /* hand-torn deckled outline via layered radial-gradient mask */
-  mask-image:
-    radial-gradient(3px 3px at 4px 4px, black 96%, transparent 100%),
-    linear-gradient(black, black);
-  mask-composite: intersect;
-  -webkit-mask-composite: source-in;
 }
 
 /* softer inner deckled photo well */
