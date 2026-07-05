@@ -120,50 +120,121 @@ function ChapterView() {
             No photos in this chapter yet.
           </p>
         ) : (
-          <div className="columns-1 md:columns-2 gap-10 [column-fill:_balance]">
+          <div className="columns-1 md:columns-2 gap-12 [column-fill:_balance]">
             {photos.map((p: any, i: number) => {
-              const tilt = ((i % 5) - 2) * 0.9;
-              const tape = TAPE_VARIANTS[i % TAPE_VARIANTS.length];
+              const tilt = ((i % 5) - 2) * 1.4;
+              const deco: Deco = DECOS[i % DECOS.length];
               return (
                 <figure
                   key={p.id}
-                  className="polaroid mb-10 break-inside-avoid inline-block w-full rise-2 relative"
+                  className="mb-14 break-inside-avoid inline-block w-full rise-2 relative"
                   style={{ transform: `rotate(${tilt}deg)` }}
                 >
-                  <span className={tape} />
-                  <div className="relative">
-                    <button
-                      onClick={() => setLightbox(i)}
-                      className="block w-full overflow-hidden relative"
-                    >
-                      <img
-                        src={p.image_url}
-                        alt={p.title ?? ""}
-                        className="w-full object-cover hover:scale-[1.03] transition duration-700 sepia-[0.08]"
+                  {/* Layered paper card — photo is tucked behind, not pasted on top */}
+                  <div
+                    className="aged-paper relative"
+                    style={{
+                      padding: "18px 18px 22px 18px",
+                      boxShadow:
+                        "0 1px 0 rgba(0,0,0,0.05), 0 22px 40px -22px color-mix(in oklab, var(--sepia) 60%, transparent), 0 8px 18px -10px color-mix(in oklab, var(--ink) 25%, transparent)",
+                    }}
+                  >
+                    {/* Per-card embellishment (only one, kept subtle) */}
+                    {deco === "tape-cream" && (
+                      <span
+                        className="washi-tape"
+                        style={{ top: -12, left: "18%", width: 110, transform: "rotate(-6deg)" }}
                       />
-                      <div className="absolute inset-0 bg-gradient-to-t from-[color:var(--sepia)]/10 via-transparent to-transparent pointer-events-none" />
-                    </button>
-                    <PhotoCorners />
+                    )}
+                    {deco === "tape-gold" && (
+                      <span
+                        className="washi-tape-gold"
+                        style={{ top: -14, right: "16%", width: 120, transform: "rotate(5deg)" }}
+                      />
+                    )}
+                    {deco === "tape-pink" && (
+                      <span
+                        className="washi-tape"
+                        style={{
+                          top: -10,
+                          left: "40%",
+                          width: 130,
+                          transform: "rotate(-3deg)",
+                          background:
+                            "repeating-linear-gradient(45deg, color-mix(in oklab, var(--pink-vivid) 32%, white) 0 6px, color-mix(in oklab, var(--pink-vivid) 18%, white) 6px 12px)",
+                          opacity: 0.85,
+                        }}
+                      />
+                    )}
+                    {deco === "clip" && (
+                      <Paperclip
+                        className="absolute w-6 h-12"
+                        style={{ top: -14, left: "50%", transform: "translateX(-50%) rotate(-4deg)" } as any}
+                      />
+                    )}
+                    {deco === "stamp" && (
+                      <div
+                        className="absolute"
+                        style={{ top: 8, right: 8, transform: "rotate(6deg)", opacity: 0.9 }}
+                      >
+                        <PostageStamp />
+                      </div>
+                    )}
+                    {deco === "sprig" && (
+                      <Sprig
+                        className="absolute w-12 text-[color:var(--pink-vivid)]/50"
+                        style={{ bottom: -18, left: -18, transform: "rotate(-20deg)" } as any}
+                      />
+                    )}
+
+                    {/* Photo window — image extends behind an inner paper frame,
+                        no crisp digital rectangle at the edges */}
+                    <div className="relative">
+                      <button
+                        onClick={() => setLightbox(i)}
+                        className="block w-full relative overflow-hidden"
+                        style={{ background: "color-mix(in oklab, var(--sepia) 20%, #1a1310)" }}
+                      >
+                        <img
+                          src={p.image_url}
+                          alt={p.title ?? ""}
+                          className="w-full object-cover hover:scale-[1.04] transition duration-[900ms] ease-out sepia-[0.1] brightness-95"
+                        />
+                        {/* Inner paper bevel — sells "photo tucked under the frame" */}
+                        <div
+                          className="pointer-events-none absolute inset-0"
+                          style={{
+                            boxShadow:
+                              "inset 0 0 0 1px rgba(0,0,0,0.35), inset 0 2px 6px rgba(0,0,0,0.55), inset 0 -2px 6px rgba(0,0,0,0.35), inset 0 0 30px rgba(30,20,15,0.35)",
+                          }}
+                        />
+                        {/* Soft top tint so photo blends into the paper tone */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-[color:var(--sepia)]/15 via-transparent to-[color:var(--sepia)]/10 pointer-events-none" />
+                      </button>
+                      {deco === "corners" && <PhotoCorners />}
+                    </div>
+
+                    {/* Text is printed on the paper beneath the photo */}
+                    <figcaption className="pt-4 px-1 text-center relative">
+                      {p.title && (
+                        <h3 className="serif italic text-2xl text-ink leading-tight">{p.title}</h3>
+                      )}
+                      {p.taken_at && (
+                        <p className="stamp-font text-[10px] uppercase tracking-[0.28em] text-[color:var(--sepia)] mt-1">
+                          {new Date(p.taken_at).toLocaleDateString(undefined, {
+                            month: "long",
+                            day: "numeric",
+                            year: "numeric",
+                          })}
+                        </p>
+                      )}
+                      {p.caption && (
+                        <p className="hand text-xl text-[color:var(--ink)]/75 mt-2 leading-snug">
+                          {p.caption}
+                        </p>
+                      )}
+                    </figcaption>
                   </div>
-                  <figcaption className="pt-4 px-1 text-center relative">
-                    {p.title && (
-                      <h3 className="serif italic text-2xl text-ink">{p.title}</h3>
-                    )}
-                    {p.taken_at && (
-                      <p className="stamp-font text-[10px] uppercase tracking-[0.28em] text-[color:var(--sepia)] mt-1">
-                        {new Date(p.taken_at).toLocaleDateString(undefined, {
-                          month: "long",
-                          day: "numeric",
-                          year: "numeric",
-                        })}
-                      </p>
-                    )}
-                    {p.caption && (
-                      <p className="hand text-xl text-[color:var(--ink)]/75 mt-2 leading-snug">
-                        {p.caption}
-                      </p>
-                    )}
-                  </figcaption>
                 </figure>
               );
             })}
