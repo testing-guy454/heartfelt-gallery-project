@@ -9,39 +9,19 @@ export function HeartIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
-/** Quiet ink ampersand — a letterhead mark, nothing more */
-export function SealIcon({ size = 40 }: { size?: number }) {
+/** Ornate cameo mark — user-provided artwork */
+export function SealIcon({ size = 48 }: { size?: number }) {
   return (
-    <svg
-      viewBox="0 0 40 40"
+    <img
+      src={sealCameo.url}
+      alt=""
       width={size}
       height={size}
-      className="shrink-0"
+      className="shrink-0 select-none"
+      style={{ objectFit: "contain", mixBlendMode: "multiply" }}
+      draggable={false}
       aria-hidden
-    >
-      <text
-        x="20"
-        y="30"
-        textAnchor="middle"
-        fill="var(--rose-deep)"
-        style={{
-          fontFamily: "var(--font-serif)",
-          fontStyle: "italic",
-          fontWeight: 500,
-          fontSize: "34px",
-        }}
-      >
-        &amp;
-      </text>
-      <path
-        d="M6 36 Q 20 39 34 36"
-        fill="none"
-        stroke="var(--gold)"
-        strokeWidth="0.9"
-        strokeLinecap="round"
-        opacity="0.75"
-      />
-    </svg>
+    />
   );
 }
 
