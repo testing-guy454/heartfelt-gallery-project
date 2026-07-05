@@ -167,3 +167,76 @@ export const deletePhoto = createServerFn({ method: "POST" })
     if (error) throw new Error(error.message);
     return { ok: true };
   });
+
+export const reorderPhotos = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: { chapter_id: string; photo_ids: string[] }) => data)
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context);
+    const results = await Promise.all(
+      data.photo_ids.map((id, idx) =>
+        context.supabase
+          .from("photos")
+          .update({ sort_order: idx + 1 })
+          .eq("id", id)
+          .eq("chapter_id", data.chapter_id),
+      ),
+    );
+    for (const r of results) if (r.error) throw new Error(r.error.message);
+    return { ok: true };
+  });
+
+const SIGNED_URL_TTL = 60 * 60 * 24 * 365 * 10; // ~10 years
+
+export const uploadPhoto = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data: {
+    chapter_id: string;
+    filename: string;
+    content_type: string;
+    data_base64: string;
+    title?: string;
+    caption?: string;
+    taken_at?: string | null;
+  }) => data)
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    const bin = atob(data.data_base64);
+    const bytes = new Uint8Array(bin.length);
+    for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+
+    const extMatch = data.filename.match(/\.([a-zA-Z0-9]+)$/);
+    const ext = (extMatch?.[1] ?? "jpg").toLowerCase();
+    const key = `chapters/${data.chapter_id}/${crypto.randomUUID()}.${ext}`;
+
+    const { error: upErr } = await supabaseAdmin.storage
+      .from("album-photos")
+      .upload(key, bytes, { contentType: data.content_type, upsert: false });
+    if (upErr) throw new Error(upErr.message);
+
+    const { data: signed, error: sErr } = await supabaseAdmin.storage
+      .from("album-photos")
+      .createSignedUrl(key, SIGNED_URL_TTL);
+    if (sErr || !signed) throw new Error(sErr?.message ?? "sign_failed");
+
+    const { data: maxRow } = await context.supabase
+      .from("photos").select("sort_order").eq("chapter_id", data.chapter_id)
+      .order("sort_order", { ascending: false }).limit(1).maybeSingle();
+    const next = ((maxRow?.sort_order as number | undefined) ?? 0) + 1;
+
+    const { data: created, error } = await context.supabase
+      .from("photos")
+      .insert({
+        chapter_id: data.chapter_id,
+        image_url: signed.signedUrl,
+        title: data.title ?? null,
+        caption: data.caption ?? null,
+        taken_at: data.taken_at ?? null,
+        sort_order: next,
+      })
+      .select("*").single();
+    if (error) throw new Error(error.message);
+    return created;
+  });
