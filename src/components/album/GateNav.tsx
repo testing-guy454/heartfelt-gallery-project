@@ -85,7 +85,7 @@ function NavLink({
   to,
   label,
 }: {
-  to: "/album" | "/album/timeline";
+  to: "/album" | "/album/timeline" | "/album/favorites";
   label: string;
 }) {
   return (
