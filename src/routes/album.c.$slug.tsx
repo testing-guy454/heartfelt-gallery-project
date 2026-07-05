@@ -45,6 +45,7 @@ export const Route = createFileRoute("/album/c/$slug")({
 });
 
 const TAPE_VARIANTS = ["washi-tape", "washi-tape-gold"];
+void TAPE_VARIANTS;
 
 function ChapterView() {
   const { chapter, photos } = Route.useLoaderData();
