@@ -180,10 +180,9 @@ function ChapterView() {
                       </div>
                     )}
                     {deco === "sprig" && (
-                      <Sprig
-                        className="absolute w-12 text-[color:var(--pink-vivid)]/50"
-                        style={{ bottom: -18, left: -18, transform: "rotate(-20deg)" } as any}
-                      />
+                      <div className="absolute" style={{ bottom: -18, left: -18, transform: "rotate(-20deg)" }}>
+                        <Sprig className="w-12 text-[color:var(--pink-vivid)]/50" />
+                      </div>
                     )}
 
                     {/* Photo window — image extends behind an inner paper frame,
