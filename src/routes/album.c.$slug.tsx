@@ -167,10 +167,9 @@ function ChapterView() {
                       />
                     )}
                     {deco === "clip" && (
-                      <Paperclip
-                        className="absolute w-6 h-12"
-                        style={{ top: -14, left: "50%", transform: "translateX(-50%) rotate(-4deg)" } as any}
-                      />
+                      <div className="absolute" style={{ top: -14, left: "50%", transform: "translateX(-50%) rotate(-4deg)" }}>
+                        <Paperclip className="w-6 h-12" />
+                      </div>
                     )}
                     {deco === "stamp" && (
                       <div
