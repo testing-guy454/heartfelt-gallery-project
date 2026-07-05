@@ -9,7 +9,7 @@ export function HeartIcon(props: SVGProps<SVGSVGElement>) {
   );
 }
 
-/** Ornate cameo mark — user-provided artwork, background removed */
+/** Ornate cameo mark — user-provided artwork, background removed, colours boosted */
 export function SealIcon({ size = 48 }: { size?: number }) {
   return (
     <img
@@ -17,7 +17,7 @@ export function SealIcon({ size = 48 }: { size?: number }) {
       alt=""
       width={size}
       height={size}
-      className="shrink-0 select-none"
+      className="shrink-0 select-none saturate-[1.45] contrast-[1.18] brightness-[1.06]"
       style={{ objectFit: "contain" }}
       draggable={false}
       aria-hidden
