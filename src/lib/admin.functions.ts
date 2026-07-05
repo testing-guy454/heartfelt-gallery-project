@@ -163,7 +163,7 @@ export const addPhoto = createServerFn({ method: "POST" })
 
 export const updatePhoto = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
-  .inputValidator((data: { id: string; title?: string | null; caption?: string | null; taken_at?: string | null; image_url?: string }) => data)
+  .inputValidator((data: { id: string; title?: string | null; caption?: string | null; taken_at?: string | null; image_url?: string; is_favorite?: boolean }) => data)
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
     const { id, ...patch } = data;

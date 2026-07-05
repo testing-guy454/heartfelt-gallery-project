@@ -15,6 +15,7 @@ import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AlbumIndexRouteImport } from './routes/album.index'
 import { Route as AlbumTimelineRouteImport } from './routes/album.timeline'
+import { Route as AlbumFavoritesRouteImport } from './routes/album.favorites'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AlbumCSlugRouteImport } from './routes/album.c.$slug'
 import { Route as AuthenticatedAdminChaptersIndexRouteImport } from './routes/_authenticated/admin.chapters.index'
@@ -49,6 +50,11 @@ const AlbumTimelineRoute = AlbumTimelineRouteImport.update({
   path: '/album/timeline',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AlbumFavoritesRoute = AlbumFavoritesRouteImport.update({
+  id: '/album/favorites',
+  path: '/album/favorites',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedAdminIndexRoute = AuthenticatedAdminIndexRouteImport.update({
   id: '/admin/',
   path: '/admin/',
@@ -76,6 +82,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/unlock': typeof UnlockRoute
+  '/album/favorites': typeof AlbumFavoritesRoute
   '/album/timeline': typeof AlbumTimelineRoute
   '/album/': typeof AlbumIndexRoute
   '/album/c/$slug': typeof AlbumCSlugRoute
@@ -87,6 +94,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/auth': typeof AuthRoute
   '/unlock': typeof UnlockRoute
+  '/album/favorites': typeof AlbumFavoritesRoute
   '/album/timeline': typeof AlbumTimelineRoute
   '/album': typeof AlbumIndexRoute
   '/album/c/$slug': typeof AlbumCSlugRoute
@@ -100,6 +108,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
   '/auth': typeof AuthRoute
   '/unlock': typeof UnlockRoute
+  '/album/favorites': typeof AlbumFavoritesRoute
   '/album/timeline': typeof AlbumTimelineRoute
   '/album/': typeof AlbumIndexRoute
   '/album/c/$slug': typeof AlbumCSlugRoute
@@ -113,6 +122,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/unlock'
+    | '/album/favorites'
     | '/album/timeline'
     | '/album/'
     | '/album/c/$slug'
@@ -124,6 +134,7 @@ export interface FileRouteTypes {
     | '/'
     | '/auth'
     | '/unlock'
+    | '/album/favorites'
     | '/album/timeline'
     | '/album'
     | '/album/c/$slug'
@@ -136,6 +147,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/auth'
     | '/unlock'
+    | '/album/favorites'
     | '/album/timeline'
     | '/album/'
     | '/album/c/$slug'
@@ -149,6 +161,7 @@ export interface RootRouteChildren {
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
   AuthRoute: typeof AuthRoute
   UnlockRoute: typeof UnlockRoute
+  AlbumFavoritesRoute: typeof AlbumFavoritesRoute
   AlbumTimelineRoute: typeof AlbumTimelineRoute
   AlbumIndexRoute: typeof AlbumIndexRoute
   AlbumCSlugRoute: typeof AlbumCSlugRoute
@@ -196,6 +209,13 @@ declare module '@tanstack/react-router' {
       path: '/album/timeline'
       fullPath: '/album/timeline'
       preLoaderRoute: typeof AlbumTimelineRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/album/favorites': {
+      id: '/album/favorites'
+      path: '/album/favorites'
+      fullPath: '/album/favorites'
+      preLoaderRoute: typeof AlbumFavoritesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/admin/': {
@@ -249,6 +269,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
   AuthRoute: AuthRoute,
   UnlockRoute: UnlockRoute,
+  AlbumFavoritesRoute: AlbumFavoritesRoute,
   AlbumTimelineRoute: AlbumTimelineRoute,
   AlbumIndexRoute: AlbumIndexRoute,
   AlbumCSlugRoute: AlbumCSlugRoute,
@@ -256,13 +277,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}

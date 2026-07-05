@@ -46,6 +46,8 @@ export function GateNav() {
           <Dot />
           <NavLink to="/album/timeline" label="Timeline" />
           <Dot />
+          <NavLink to="/album/favorites" label="Favorites" />
+          <Dot />
           <button
             onClick={onLock}
             className="group relative serif italic text-[15px] md:text-[16px] leading-none text-[color:var(--ink)]/60 hover:text-[color:var(--rose-deep)] transition-colors inline-flex items-center gap-1.5"
@@ -83,7 +85,7 @@ function NavLink({
   to,
   label,
 }: {
-  to: "/album" | "/album/timeline";
+  to: "/album" | "/album/timeline" | "/album/favorites";
   label: string;
 }) {
   return (

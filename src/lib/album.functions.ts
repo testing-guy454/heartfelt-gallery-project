@@ -56,7 +56,7 @@ export const getChapter = createServerFn({ method: "GET" })
     if (!chapter) throw new Error("not_found");
     const { data: photos, error: pErr } = await supabase
       .from("photos")
-      .select("id, image_url, title, caption, taken_at, sort_order")
+      .select("id, image_url, title, caption, taken_at, sort_order, is_favorite")
       .eq("chapter_id", chapter.id)
       .order("sort_order", { ascending: true });
     if (pErr) throw new Error(pErr.message);
@@ -68,7 +68,19 @@ export const listTimeline = createServerFn({ method: "GET" }).handler(async () =
   const supabase = publicClient();
   const { data, error } = await supabase
     .from("photos")
+    .select("id, image_url, title, caption, taken_at, chapter_id, is_favorite, chapters:chapter_id ( title, slug )")
+    .order("taken_at", { ascending: true, nullsFirst: false });
+  if (error) throw new Error(error.message);
+  return data ?? [];
+});
+
+export const listFavorites = createServerFn({ method: "GET" }).handler(async () => {
+  await requireUnlocked();
+  const supabase = publicClient();
+  const { data, error } = await supabase
+    .from("photos")
     .select("id, image_url, title, caption, taken_at, chapter_id, chapters:chapter_id ( title, slug )")
+    .eq("is_favorite", true)
     .order("taken_at", { ascending: true, nullsFirst: false });
   if (error) throw new Error(error.message);
   return data ?? [];
