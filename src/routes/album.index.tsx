@@ -87,49 +87,89 @@ function AlbumHome() {
                     transform: `rotate(${s.rotate}deg) translateY(${s.translateY}rem)`,
                   } as React.CSSProperties}
                 >
-                  {/* Aged postcard */}
-                  <div className="aged-paper stitched rounded-sm p-4 pb-6 relative overflow-hidden">
-                    <span className="washi-tape" />
+                  {/* Polaroid: image is a background layer, paper mat sits over it with a die-cut window */}
+                  <div className="polaroid-card relative rounded-sm overflow-hidden shadow-[0_18px_30px_-18px_rgba(0,0,0,0.55)]">
+                    {/* Background image layer — sits behind the paper mat, visible through the cutout */}
+                    {c.cover_url && (
+                      <div className="absolute inset-0 z-0 overflow-hidden">
+                        <img
+                          src={c.cover_url}
+                          alt=""
+                          aria-hidden
+                          className="w-full h-full object-cover scale-110 group-hover:scale-[1.16] transition duration-[1400ms] ease-out sepia-[0.1] brightness-95"
+                        />
+                        {/* soft vignette on the background image */}
+                        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_40%,rgba(30,20,15,0.35)_100%)]" />
+                      </div>
+                    )}
 
-                    {/* Chapter number, handwritten */}
-                    <div className="absolute top-4 left-4 z-20 hand text-2xl text-[color:var(--pink-vivid)] leading-none">
-                      no. {String(i + 1).padStart(2, "0")}
-                    </div>
+                    {/* Paper mat with a rectangular window cut out */}
+                    <div
+                      className="aged-paper stitched relative z-10 p-4"
+                      style={{
+                        // Cut a rectangular window in the mat: keep paper everywhere EXCEPT the window rect
+                        WebkitMaskImage:
+                          "linear-gradient(#000,#000), linear-gradient(#000,#000)",
+                        maskImage:
+                          "linear-gradient(#000,#000), linear-gradient(#000,#000)",
+                        WebkitMaskRepeat: "no-repeat, no-repeat",
+                        maskRepeat: "no-repeat, no-repeat",
+                        // First layer = full card; second = the window we subtract
+                        WebkitMaskSize: "100% 100%, calc(100% - 32px) 55%",
+                        maskSize: "100% 100%, calc(100% - 32px) 55%",
+                        WebkitMaskPosition: "0 0, 16px 44px",
+                        maskPosition: "0 0, 16px 44px",
+                        WebkitMaskComposite: "xor",
+                        maskComposite: "exclude",
+                      } as React.CSSProperties}
+                    >
+                      <span className="washi-tape" />
 
-                    {/* Photo with corners */}
-                    <div className="relative mx-2 mt-10">
-                      <div className="relative aspect-[4/3] overflow-hidden bg-muted shadow-[0_10px_20px_-14px_rgba(0,0,0,0.6)]">
-                        {c.cover_url && (
-                          <img
-                            src={c.cover_url}
-                            alt={c.title}
-                            className="w-full h-full object-cover group-hover:scale-105 transition duration-[1200ms] ease-out sepia-[0.08]"
-                          />
+                      {/* Chapter number, handwritten — sits on the top mat band */}
+                      <div className="hand text-2xl text-[color:var(--pink-vivid)] leading-none mb-2">
+                        no. {String(i + 1).padStart(2, "0")}
+                      </div>
+
+                      {/* Spacer where the window is */}
+                      <div style={{ height: "calc(0.55 * (100% ) )" }} className="aspect-[16/9]" />
+
+                      {/* Bottom mat: title + description */}
+                      <div className="pt-5 pb-2 relative">
+                        <Sprig className="absolute -top-3 right-2 w-8 text-[color:var(--pink-vivid)]/30" />
+                        <h2 className="serif italic text-3xl md:text-4xl text-ink group-hover:text-[color:var(--pink-vivid)] transition">
+                          {c.title}
+                        </h2>
+                        {c.description && (
+                          <p className="hand text-xl text-[color:var(--ink)]/75 mt-3 leading-snug">
+                            {c.description}
+                          </p>
                         )}
-                        <div className="absolute inset-0 bg-gradient-to-t from-[color:var(--sepia)]/20 via-transparent to-transparent" />
-                        <PhotoCorners />
-                        {(c.date_start || c.date_end) && (
-                          <div className="absolute bottom-3 left-3">
-                            <span className="ribbon">{formatRange(c.date_start, c.date_end)}</span>
-                          </div>
-                        )}
+                        <div className="mt-5 flex items-center gap-2 text-[11px] stamp-font uppercase tracking-[0.25em] text-[color:var(--pink-vivid)]">
+                          <HeartIcon className="w-3 h-3" />
+                          open this chapter
+                        </div>
                       </div>
                     </div>
 
-                    <div className="px-3 pt-6 pb-2 relative">
-                      <Sprig className="absolute -top-3 right-2 w-8 text-[color:var(--pink-vivid)]/30" />
-                      <h2 className="serif italic text-3xl md:text-4xl text-ink group-hover:text-[color:var(--pink-vivid)] transition">
-                        {c.title}
-                      </h2>
-                      {c.description && (
-                        <p className="hand text-xl text-[color:var(--ink)]/75 mt-3 leading-snug">
-                          {c.description}
-                        </p>
+                    {/* Bevel / inset shadow around the cutout window to sell the "die-cut through paper" depth */}
+                    <div
+                      className="pointer-events-none absolute z-20"
+                      style={{
+                        top: 44,
+                        left: 16,
+                        right: 16,
+                        height: "55%",
+                        boxShadow:
+                          "inset 0 2px 6px rgba(0,0,0,0.55), inset 0 -1px 2px rgba(255,255,255,0.15)",
+                        borderRadius: 2,
+                      }}
+                    >
+                      <PhotoCorners />
+                      {(c.date_start || c.date_end) && (
+                        <div className="absolute bottom-3 left-3">
+                          <span className="ribbon">{formatRange(c.date_start, c.date_end)}</span>
+                        </div>
                       )}
-                      <div className="mt-5 flex items-center gap-2 text-[11px] stamp-font uppercase tracking-[0.25em] text-[color:var(--pink-vivid)]">
-                        <HeartIcon className="w-3 h-3" />
-                        open this chapter
-                      </div>
                     </div>
                   </div>
                 </Link>
