@@ -1,4 +1,5 @@
 import type { SVGProps } from "react";
+import sealCameo from "@/assets/seal-cameo.png.asset.json";
 
 export function HeartIcon(props: SVGProps<SVGSVGElement>) {
   return (
