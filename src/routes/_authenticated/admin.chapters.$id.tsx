@@ -38,6 +38,7 @@ type Photo = {
   caption: string | null;
   taken_at: string | null;
   sort_order: number;
+  is_favorite: boolean;
 };
 
 const MAX_UPLOAD_BYTES = 10 * 1024 * 1024; // 10 MB
