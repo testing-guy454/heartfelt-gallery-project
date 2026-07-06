@@ -14,9 +14,11 @@ export function MemoryMap({ chapters }: { chapters: MapChapter[] }) {
   const mapEl = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<any>(null);
   const layerRef = useRef<any>(null);
+  const didInitialViewRef = useRef(false);
   const [selected, setSelected] = useState<MapChapter | null>(null);
   const [filter, setFilter] = useState<Filter>({ kind: "all" });
   const [ready, setReady] = useState(false);
+
 
   const years = useMemo(() => {
     const s = new Set<number>();
