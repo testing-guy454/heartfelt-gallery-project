@@ -79,7 +79,7 @@ export const adminGetChapter = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: { id: string }) => data)
   .handler(async ({ data, context }) => {
-    await assertAdmin(context);
+    await assertCanManageChapter(context, data.id);
     const { data: chapter, error } = await context.supabase
       .from("chapters")
       .select("*")
@@ -95,6 +95,19 @@ export const adminGetChapter = createServerFn({ method: "GET" })
     if (pErr) throw new Error(pErr.message);
     return { chapter, photos: photos ?? [] };
   });
+
+export const listMyChapters = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { data, error } = await context.supabase
+      .from("chapters")
+      .select("id, title, slug, description, cover_url, sort_order, created_by")
+      .eq("created_by", context.userId)
+      .order("sort_order", { ascending: true });
+    if (error) throw new Error(error.message);
+    return data ?? [];
+  });
+
 
 function slugify(s: string) {
   return s.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 60) || "chapter";
