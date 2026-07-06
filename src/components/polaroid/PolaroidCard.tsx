@@ -1,4 +1,3 @@
-import { Link } from "@tanstack/react-router";
 import { PhotoCorners } from "@/components/album/Ornaments";
 import { isFavorite } from "@/lib/favorites";
 
