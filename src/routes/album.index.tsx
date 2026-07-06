@@ -144,6 +144,11 @@ function AlbumHome() {
                             {c.description}
                           </p>
                         )}
+                        {c.creator_name && (
+                          <p className="hand text-sm text-[color:var(--ink)]/55 mt-2 italic">
+                            — a chapter by {c.creator_name}
+                          </p>
+                        )}
                         <div className="mt-5 flex items-center gap-2 text-[11px] stamp-font uppercase tracking-[0.25em] text-[color:var(--pink-vivid)]">
                           <HeartIcon className="w-3 h-3" />
                           open this chapter

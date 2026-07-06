@@ -1,16 +1,27 @@
 import { Link, useRouter } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
+import { useEffect, useState } from "react";
 import { lockAlbum } from "@/lib/gate.functions";
+import { supabase } from "@/integrations/supabase/client";
 import { SealIcon } from "./Ornaments";
 
 export function GateNav() {
   const router = useRouter();
   const lock = useServerFn(lockAlbum);
+  const [signedIn, setSignedIn] = useState<boolean>(false);
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => setSignedIn(!!data.user));
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => setSignedIn(!!session?.user));
+    return () => { sub.subscription.unsubscribe(); };
+  }, []);
+
   async function onLock() {
     await lock();
     await router.invalidate();
     router.navigate({ to: "/" });
   }
+
 
   return (
     <nav
@@ -47,6 +58,12 @@ export function GateNav() {
           <NavLink to="/album/timeline" label="Timeline" />
           <Dot />
           <NavLink to="/album/favorites" label="Favorites" />
+          <Dot />
+          {signedIn ? (
+            <NavLink to="/my/chapters" label="Your chapters" />
+          ) : (
+            <NavLink to="/auth" label="Sign in" />
+          )}
           <Dot />
           <button
             onClick={onLock}
@@ -85,7 +102,7 @@ function NavLink({
   to,
   label,
 }: {
-  to: "/album" | "/album/timeline" | "/album/favorites";
+  to: "/album" | "/album/timeline" | "/album/favorites" | "/my/chapters" | "/auth";
   label: string;
 }) {
   return (

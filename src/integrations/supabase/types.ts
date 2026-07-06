@@ -18,6 +18,7 @@ export type Database = {
         Row: {
           cover_url: string | null
           created_at: string
+          created_by: string | null
           date_end: string | null
           date_start: string | null
           description: string | null
@@ -31,6 +32,7 @@ export type Database = {
         Insert: {
           cover_url?: string | null
           created_at?: string
+          created_by?: string | null
           date_end?: string | null
           date_start?: string | null
           description?: string | null
@@ -44,6 +46,7 @@ export type Database = {
         Update: {
           cover_url?: string | null
           created_at?: string
+          created_by?: string | null
           date_end?: string | null
           date_start?: string | null
           description?: string | null
@@ -99,6 +102,27 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      profiles: {
+        Row: {
+          created_at: string
+          display_name: string | null
+          id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          display_name?: string | null
+          id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       user_roles: {
         Row: {

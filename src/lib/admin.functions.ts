@@ -1,13 +1,39 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
-async function assertAdmin(context: { supabase: any; userId: string }) {
-  const { data, error } = await context.supabase.rpc("has_role", {
+async function isAdmin(context: { supabase: any; userId: string }) {
+  const { data } = await context.supabase.rpc("has_role", {
     _user_id: context.userId,
     _role: "admin",
   });
+  return !!data;
+}
+
+async function assertAdmin(context: { supabase: any; userId: string }) {
+  if (!(await isAdmin(context))) throw new Error("Forbidden: admin only");
+}
+
+async function assertCanManageChapter(
+  context: { supabase: any; userId: string },
+  chapterId: string,
+) {
+  if (await isAdmin(context)) return;
+  const { data, error } = await context.supabase
+    .from("chapters").select("created_by").eq("id", chapterId).maybeSingle();
   if (error) throw new Error(error.message);
-  if (!data) throw new Error("Forbidden: admin only");
+  if (!data || data.created_by !== context.userId) throw new Error("Forbidden");
+}
+
+async function assertCanManagePhoto(
+  context: { supabase: any; userId: string },
+  photoId: string,
+) {
+  if (await isAdmin(context)) return;
+  const { data, error } = await context.supabase
+    .from("photos").select("chapter_id, chapters:chapter_id(created_by)").eq("id", photoId).maybeSingle();
+  if (error) throw new Error(error.message);
+  const owner = (data as any)?.chapters?.created_by;
+  if (!data || owner !== context.userId) throw new Error("Forbidden");
 }
 
 export const amIAdmin = createServerFn({ method: "GET" })
@@ -53,7 +79,7 @@ export const adminGetChapter = createServerFn({ method: "GET" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: { id: string }) => data)
   .handler(async ({ data, context }) => {
-    await assertAdmin(context);
+    await assertCanManageChapter(context, data.id);
     const { data: chapter, error } = await context.supabase
       .from("chapters")
       .select("*")
@@ -70,6 +96,19 @@ export const adminGetChapter = createServerFn({ method: "GET" })
     return { chapter, photos: photos ?? [] };
   });
 
+export const listMyChapters = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .handler(async ({ context }) => {
+    const { data, error } = await context.supabase
+      .from("chapters")
+      .select("id, title, slug, description, cover_url, sort_order, created_by")
+      .eq("created_by", context.userId)
+      .order("sort_order", { ascending: true });
+    if (error) throw new Error(error.message);
+    return data ?? [];
+  });
+
+
 function slugify(s: string) {
   return s.toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "").slice(0, 60) || "chapter";
 }
@@ -78,7 +117,8 @@ export const createChapter = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: { title: string; description?: string }) => data)
   .handler(async ({ data, context }) => {
-    await assertAdmin(context);
+    // Any signed-in user can create a chapter; ownership is tracked in created_by.
+
     const base = slugify(data.title);
     let slug = base;
     let n = 1;
@@ -93,7 +133,13 @@ export const createChapter = createServerFn({ method: "POST" })
     const next = ((maxRow?.sort_order as number | undefined) ?? 0) + 1;
     const { data: created, error } = await context.supabase
       .from("chapters")
-      .insert({ title: data.title, slug, description: data.description ?? null, sort_order: next })
+      .insert({
+        title: data.title,
+        slug,
+        description: data.description ?? null,
+        sort_order: next,
+        created_by: context.userId,
+      })
       .select("*").single();
     if (error) throw new Error(error.message);
     return created;
@@ -106,7 +152,7 @@ export const updateChapter = createServerFn({ method: "POST" })
     song_url?: string | null; date_start?: string | null; date_end?: string | null;
   }) => data)
   .handler(async ({ data, context }) => {
-    await assertAdmin(context);
+    await assertCanManageChapter(context, data.id);
     const { id, ...patch } = data;
     const { error } = await context.supabase.from("chapters").update(patch).eq("id", id);
     if (error) throw new Error(error.message);
@@ -117,7 +163,7 @@ export const deleteChapter = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: { id: string }) => data)
   .handler(async ({ data, context }) => {
-    await assertAdmin(context);
+    await assertCanManageChapter(context, data.id);
     const { error } = await context.supabase.from("chapters").delete().eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
@@ -141,7 +187,7 @@ export const addPhoto = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: { chapter_id: string; image_url: string; title?: string; caption?: string; taken_at?: string | null }) => data)
   .handler(async ({ data, context }) => {
-    await assertAdmin(context);
+    await assertCanManageChapter(context, data.chapter_id);
     const { data: maxRow } = await context.supabase
       .from("photos").select("sort_order").eq("chapter_id", data.chapter_id)
       .order("sort_order", { ascending: false }).limit(1).maybeSingle();
@@ -165,7 +211,7 @@ export const updatePhoto = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: { id: string; title?: string | null; caption?: string | null; taken_at?: string | null; image_url?: string; is_favorite?: boolean }) => data)
   .handler(async ({ data, context }) => {
-    await assertAdmin(context);
+    await assertCanManagePhoto(context, data.id);
     const { id, ...patch } = data;
     const { error } = await context.supabase.from("photos").update(patch).eq("id", id);
     if (error) throw new Error(error.message);
@@ -176,7 +222,7 @@ export const deletePhoto = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: { id: string }) => data)
   .handler(async ({ data, context }) => {
-    await assertAdmin(context);
+    await assertCanManagePhoto(context, data.id);
     const { error } = await context.supabase.from("photos").delete().eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
@@ -186,7 +232,7 @@ export const reorderPhotos = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: { chapter_id: string; photo_ids: string[] }) => data)
   .handler(async ({ data, context }) => {
-    await assertAdmin(context);
+    await assertCanManageChapter(context, data.chapter_id);
     const results = await Promise.all(
       data.photo_ids.map((id, idx) =>
         context.supabase
@@ -214,7 +260,7 @@ export const uploadPhoto = createServerFn({ method: "POST" })
     taken_at?: string | null;
   }) => data)
   .handler(async ({ data, context }) => {
-    await assertAdmin(context);
+    await assertCanManageChapter(context, data.chapter_id);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     const bin = atob(data.data_base64);

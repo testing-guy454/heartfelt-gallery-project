@@ -493,6 +493,11 @@ function ChapterView() {
               {chapter.description}
             </p>
           )}
+          {(chapter as any).creator_name && (
+            <p className="hand text-lg text-[color:var(--ink)]/55 mt-4 italic">
+              written by {(chapter as any).creator_name}
+            </p>
+          )}
         </header>
 
         {chapter.song_url && (

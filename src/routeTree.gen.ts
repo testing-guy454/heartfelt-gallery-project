@@ -18,6 +18,7 @@ import { Route as AlbumTimelineRouteImport } from './routes/album.timeline'
 import { Route as AlbumFavoritesRouteImport } from './routes/album.favorites'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AlbumCSlugRouteImport } from './routes/album.c.$slug'
+import { Route as AuthenticatedMyChaptersIndexRouteImport } from './routes/_authenticated/my.chapters.index'
 import { Route as AuthenticatedAdminChaptersIndexRouteImport } from './routes/_authenticated/admin.chapters.index'
 import { Route as AuthenticatedAdminChaptersIdRouteImport } from './routes/_authenticated/admin.chapters.$id'
 
@@ -65,6 +66,12 @@ const AlbumCSlugRoute = AlbumCSlugRouteImport.update({
   path: '/album/c/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedMyChaptersIndexRoute =
+  AuthenticatedMyChaptersIndexRouteImport.update({
+    id: '/my/chapters/',
+    path: '/my/chapters/',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const AuthenticatedAdminChaptersIndexRoute =
   AuthenticatedAdminChaptersIndexRouteImport.update({
     id: '/admin/chapters/',
@@ -89,6 +96,7 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/admin/chapters/$id': typeof AuthenticatedAdminChaptersIdRoute
   '/admin/chapters/': typeof AuthenticatedAdminChaptersIndexRoute
+  '/my/chapters/': typeof AuthenticatedMyChaptersIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -101,6 +109,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/admin/chapters/$id': typeof AuthenticatedAdminChaptersIdRoute
   '/admin/chapters': typeof AuthenticatedAdminChaptersIndexRoute
+  '/my/chapters': typeof AuthenticatedMyChaptersIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -115,6 +124,7 @@ export interface FileRoutesById {
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/admin/chapters/$id': typeof AuthenticatedAdminChaptersIdRoute
   '/_authenticated/admin/chapters/': typeof AuthenticatedAdminChaptersIndexRoute
+  '/_authenticated/my/chapters/': typeof AuthenticatedMyChaptersIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -129,6 +139,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/admin/chapters/$id'
     | '/admin/chapters/'
+    | '/my/chapters/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -141,6 +152,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/admin/chapters/$id'
     | '/admin/chapters'
+    | '/my/chapters'
   id:
     | '__root__'
     | '/'
@@ -154,6 +166,7 @@ export interface FileRouteTypes {
     | '/_authenticated/admin/'
     | '/_authenticated/admin/chapters/$id'
     | '/_authenticated/admin/chapters/'
+    | '/_authenticated/my/chapters/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -232,6 +245,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AlbumCSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/my/chapters/': {
+      id: '/_authenticated/my/chapters/'
+      path: '/my/chapters'
+      fullPath: '/my/chapters/'
+      preLoaderRoute: typeof AuthenticatedMyChaptersIndexRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/_authenticated/admin/chapters/': {
       id: '/_authenticated/admin/chapters/'
       path: '/admin/chapters'
@@ -253,12 +273,14 @@ interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
   AuthenticatedAdminChaptersIdRoute: typeof AuthenticatedAdminChaptersIdRoute
   AuthenticatedAdminChaptersIndexRoute: typeof AuthenticatedAdminChaptersIndexRoute
+  AuthenticatedMyChaptersIndexRoute: typeof AuthenticatedMyChaptersIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
   AuthenticatedAdminChaptersIdRoute: AuthenticatedAdminChaptersIdRoute,
   AuthenticatedAdminChaptersIndexRoute: AuthenticatedAdminChaptersIndexRoute,
+  AuthenticatedMyChaptersIndexRoute: AuthenticatedMyChaptersIndexRoute,
 }
 
 const AuthenticatedRouteRouteWithChildren =
@@ -277,13 +299,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
