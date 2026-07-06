@@ -1,13 +1,39 @@
 import { createServerFn } from "@tanstack/react-start";
 import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 
-async function assertAdmin(context: { supabase: any; userId: string }) {
-  const { data, error } = await context.supabase.rpc("has_role", {
+async function isAdmin(context: { supabase: any; userId: string }) {
+  const { data } = await context.supabase.rpc("has_role", {
     _user_id: context.userId,
     _role: "admin",
   });
+  return !!data;
+}
+
+async function assertAdmin(context: { supabase: any; userId: string }) {
+  if (!(await isAdmin(context))) throw new Error("Forbidden: admin only");
+}
+
+async function assertCanManageChapter(
+  context: { supabase: any; userId: string },
+  chapterId: string,
+) {
+  if (await isAdmin(context)) return;
+  const { data, error } = await context.supabase
+    .from("chapters").select("created_by").eq("id", chapterId).maybeSingle();
   if (error) throw new Error(error.message);
-  if (!data) throw new Error("Forbidden: admin only");
+  if (!data || data.created_by !== context.userId) throw new Error("Forbidden");
+}
+
+async function assertCanManagePhoto(
+  context: { supabase: any; userId: string },
+  photoId: string,
+) {
+  if (await isAdmin(context)) return;
+  const { data, error } = await context.supabase
+    .from("photos").select("chapter_id, chapters:chapter_id(created_by)").eq("id", photoId).maybeSingle();
+  if (error) throw new Error(error.message);
+  const owner = (data as any)?.chapters?.created_by;
+  if (!data || owner !== context.userId) throw new Error("Forbidden");
 }
 
 export const amIAdmin = createServerFn({ method: "GET" })
