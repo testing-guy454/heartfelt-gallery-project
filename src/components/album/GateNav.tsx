@@ -123,7 +123,7 @@ function NavLink({
   to,
   label,
 }: {
-  to: "/album" | "/album/timeline" | "/album/favorites" | "/map" | "/my/chapters" | "/auth";
+  to: "/album" | "/album/timeline" | "/album/favorites" | "/anniversary" | "/map" | "/my/chapters" | "/auth";
   label: string;
 }) {
   return (

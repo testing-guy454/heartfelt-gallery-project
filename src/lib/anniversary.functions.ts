@@ -163,12 +163,25 @@ export const upsertMilestone = createServerFn({ method: "POST" })
   }) => data)
   .handler(async ({ data, context }) => {
     await assertAdmin(context);
+    const patch = {
+      title: data.title,
+      date: data.date,
+      description: data.description ?? null,
+      handwritten_note: data.handwritten_note ?? null,
+      cover_url: data.cover_url ?? null,
+      gallery_urls: data.gallery_urls ?? [],
+      location_name: data.location_name ?? null,
+      latitude: data.latitude ?? null,
+      longitude: data.longitude ?? null,
+      music_url: data.music_url ?? null,
+      chapter_id: data.chapter_id ?? null,
+      emoji: data.emoji ?? null,
+    };
     if (data.id) {
-      const { id, ...patch } = data;
       const { error } = await context.supabase
-        .from("milestones").update(patch).eq("id", id);
+        .from("milestones").update(patch).eq("id", data.id);
       if (error) throw new Error(error.message);
-      return { ok: true, id };
+      return { ok: true, id: data.id };
     }
     const { data: maxRow } = await context.supabase
       .from("milestones").select("sort_order")
@@ -176,11 +189,12 @@ export const upsertMilestone = createServerFn({ method: "POST" })
     const next = ((maxRow?.sort_order as number | undefined) ?? 0) + 1;
     const { data: created, error } = await context.supabase
       .from("milestones")
-      .insert({ ...data, sort_order: next, created_by: context.userId })
+      .insert({ ...patch, sort_order: next, created_by: context.userId })
       .select("id").single();
     if (error) throw new Error(error.message);
     return { ok: true, id: created!.id as string };
   });
+
 
 export const deleteMilestone = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
