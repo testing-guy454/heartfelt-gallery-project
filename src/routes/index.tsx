@@ -41,10 +41,29 @@ function Cover() {
   const [error, setError] = useState<string | null>(null);
   const [shake, setShake] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [session, setSession] = useState<{ name: string; landing: "/admin" | "/my/chapters" } | null>(null);
 
   useEffect(() => {
     if (unlocked) router.navigate({ to: "/album" });
   }, [unlocked, router]);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      const { data } = await supabase.auth.getUser();
+      if (cancelled || !data.user) return;
+      const [{ data: prof }, { data: role }] = await Promise.all([
+        supabase.from("profiles").select("display_name").eq("id", data.user.id).maybeSingle(),
+        supabase.from("user_roles").select("role").eq("user_id", data.user.id).eq("role", "admin").maybeSingle(),
+      ]);
+      if (cancelled) return;
+      setSession({
+        name: prof?.display_name ?? data.user.email?.split("@")[0] ?? "friend",
+        landing: role ? "/admin" : "/my/chapters",
+      });
+    })();
+    return () => { cancelled = true; };
+  }, []);
 
   async function onWhisper(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
@@ -108,9 +127,32 @@ function Cover() {
       <Butterfly className="hidden md:block absolute right-16 top-10 w-10 text-[color:var(--pink-vivid)]/70 animate-[sway_7s_ease-in-out_infinite]" />
       <Butterfly className="hidden md:block absolute left-20 bottom-16 w-8 text-[color:var(--rose-deep)]/60 animate-[sway_9s_ease-in-out_infinite]" />
 
+      <div className="relative z-10 w-full max-w-xl flex flex-col items-center gap-5">
+        {session && (
+          <div
+            className="w-full max-w-md rise-1 text-center px-6 py-4 bg-[color:var(--letter-paper)] border border-[color:var(--sepia)]/30 shadow-[0_14px_36px_-22px_rgba(80,40,30,0.5)]"
+            style={{ transform: "rotate(0.4deg)" }}
+          >
+            <p className="stamp-font text-[0.55rem] tracking-[0.42em] text-[color:var(--sepia)]/85 uppercase">
+              welcome back
+            </p>
+            <p className="serif italic text-2xl text-ink mt-1">
+              {session.name}
+            </p>
+            <button
+              type="button"
+              onClick={() => router.navigate({ to: session.landing })}
+              className="mt-3 inline-flex items-center gap-2 px-6 py-2 rounded-full border border-[color:var(--rose-deep)]/60 text-[color:var(--rose-deep)] text-[0.68rem] tracking-[0.3em] uppercase hover:bg-[color:var(--rose-deep)] hover:text-[color:var(--primary-foreground)] transition-colors"
+            >
+              <HeartIcon className="w-3 h-3" />
+              {session.landing === "/admin" ? "continue to admin" : "continue writing"}
+            </button>
+          </div>
+        )}
+
       <form
         onSubmit={mode === "whisper" ? onWhisper : onCredentials}
-        className={`relative z-10 w-full max-w-xl rise-1 ${shake ? "shake" : ""}`}
+        className={`relative w-full max-w-xl rise-1 ${shake ? "shake" : ""}`}
         style={{ transform: "rotate(-0.6deg)" }}
       >
         {/* vintage letter paper */}
