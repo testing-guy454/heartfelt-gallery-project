@@ -47,8 +47,10 @@ export function MemoryMap({ chapters }: { chapters: MapChapter[] }) {
   useEffect(() => {
     let cancelled = false;
     (async () => {
-      const L = await import("leaflet");
-      // markercluster attaches to L when imported
+      const Lmod = await import("leaflet");
+      const L: any = (Lmod as any).default ?? Lmod;
+      // markercluster reads from window.L, so expose it before importing
+      (window as any).L = L;
       await import("leaflet.markercluster");
       await import("leaflet.markercluster/dist/MarkerCluster.css");
       await import("leaflet.markercluster/dist/MarkerCluster.Default.css");
