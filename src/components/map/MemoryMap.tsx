@@ -54,6 +54,9 @@ export function MemoryMap({ chapters }: { chapters: MapChapter[] }) {
       await import("leaflet.markercluster");
       await import("leaflet.markercluster/dist/MarkerCluster.css");
       await import("leaflet.markercluster/dist/MarkerCluster.Default.css");
+      // Correct Indian boundaries (Jammu & Kashmir, Arunachal Pradesh) per Survey of India
+      const { extendLeaflet } = await import("@india-boundary-corrector/leaflet-layer");
+      extendLeaflet(L);
       if (cancelled || !mapEl.current) return;
 
       const map = L.map(mapEl.current, {
@@ -63,10 +66,11 @@ export function MemoryMap({ chapters }: { chapters: MapChapter[] }) {
         worldCopyJump: true,
       }).setView([22, 79], 5);
 
-      L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      (L as any).tileLayer.indiaBoundaryCorrected("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution: "&copy; OpenStreetMap contributors",
         maxZoom: 18,
       }).addTo(map);
+
 
       mapRef.current = { map, L };
       setReady(true);
