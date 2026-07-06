@@ -13,6 +13,7 @@ import { Route as UnlockRouteImport } from './routes/unlock'
 import { Route as McpRouteImport } from './routes/mcp'
 import { Route as MapRouteImport } from './routes/map'
 import { Route as AuthRouteImport } from './routes/auth'
+import { Route as AnniversaryRouteImport } from './routes/anniversary'
 import { Route as AuthenticatedRouteRouteImport } from './routes/_authenticated/route'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AlbumIndexRouteImport } from './routes/album.index'
@@ -22,6 +23,7 @@ import { Route as Char91DotwellKnownChar93OauthProtectedResourceRouteImport } fr
 import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]/list-tools'
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AlbumCSlugRouteImport } from './routes/album.c.$slug'
+import { Route as AuthenticatedAdminAnniversaryRouteImport } from './routes/_authenticated/admin.anniversary'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as AuthenticatedMyChaptersIndexRouteImport } from './routes/_authenticated/my.chapters.index'
@@ -46,6 +48,11 @@ const MapRoute = MapRouteImport.update({
 const AuthRoute = AuthRouteImport.update({
   id: '/auth',
   path: '/auth',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AnniversaryRoute = AnniversaryRouteImport.update({
+  id: '/anniversary',
+  path: '/anniversary',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedRouteRoute = AuthenticatedRouteRouteImport.update({
@@ -94,6 +101,12 @@ const AlbumCSlugRoute = AlbumCSlugRouteImport.update({
   path: '/album/c/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AuthenticatedAdminAnniversaryRoute =
+  AuthenticatedAdminAnniversaryRouteImport.update({
+    id: '/admin/anniversary',
+    path: '/admin/anniversary',
+    getParentRoute: () => AuthenticatedRouteRoute,
+  } as any)
 const Char91DotmcpChar93InvokeToolToolRoute =
   Char91DotmcpChar93InvokeToolToolRouteImport.update({
     id: '/.mcp/invoke-tool/$tool',
@@ -126,6 +139,7 @@ const AuthenticatedChaptersIdEditRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/anniversary': typeof AnniversaryRoute
   '/auth': typeof AuthRoute
   '/map': typeof MapRoute
   '/mcp': typeof McpRoute
@@ -137,6 +151,7 @@ export interface FileRoutesByFullPath {
   '/album/': typeof AlbumIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/admin/anniversary': typeof AuthenticatedAdminAnniversaryRoute
   '/album/c/$slug': typeof AlbumCSlugRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
   '/chapters/$id/edit': typeof AuthenticatedChaptersIdEditRoute
@@ -145,6 +160,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/anniversary': typeof AnniversaryRoute
   '/auth': typeof AuthRoute
   '/map': typeof MapRoute
   '/mcp': typeof McpRoute
@@ -156,6 +172,7 @@ export interface FileRoutesByTo {
   '/album': typeof AlbumIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/admin/anniversary': typeof AuthenticatedAdminAnniversaryRoute
   '/album/c/$slug': typeof AlbumCSlugRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
   '/chapters/$id/edit': typeof AuthenticatedChaptersIdEditRoute
@@ -166,6 +183,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteRouteWithChildren
+  '/anniversary': typeof AnniversaryRoute
   '/auth': typeof AuthRoute
   '/map': typeof MapRoute
   '/mcp': typeof McpRoute
@@ -177,6 +195,7 @@ export interface FileRoutesById {
   '/album/': typeof AlbumIndexRoute
   '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
+  '/_authenticated/admin/anniversary': typeof AuthenticatedAdminAnniversaryRoute
   '/album/c/$slug': typeof AlbumCSlugRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
   '/_authenticated/chapters/$id/edit': typeof AuthenticatedChaptersIdEditRoute
@@ -187,6 +206,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/anniversary'
     | '/auth'
     | '/map'
     | '/mcp'
@@ -198,6 +218,7 @@ export interface FileRouteTypes {
     | '/album/'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
+    | '/admin/anniversary'
     | '/album/c/$slug'
     | '/admin/'
     | '/chapters/$id/edit'
@@ -206,6 +227,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/anniversary'
     | '/auth'
     | '/map'
     | '/mcp'
@@ -217,6 +239,7 @@ export interface FileRouteTypes {
     | '/album'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
+    | '/admin/anniversary'
     | '/album/c/$slug'
     | '/admin'
     | '/chapters/$id/edit'
@@ -226,6 +249,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/_authenticated'
+    | '/anniversary'
     | '/auth'
     | '/map'
     | '/mcp'
@@ -237,6 +261,7 @@ export interface FileRouteTypes {
     | '/album/'
     | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
+    | '/_authenticated/admin/anniversary'
     | '/album/c/$slug'
     | '/_authenticated/admin/'
     | '/_authenticated/chapters/$id/edit'
@@ -247,6 +272,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRouteRoute: typeof AuthenticatedRouteRouteWithChildren
+  AnniversaryRoute: typeof AnniversaryRoute
   AuthRoute: typeof AuthRoute
   MapRoute: typeof MapRoute
   McpRoute: typeof McpRoute
@@ -289,6 +315,13 @@ declare module '@tanstack/react-router' {
       path: '/auth'
       fullPath: '/auth'
       preLoaderRoute: typeof AuthRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/anniversary': {
+      id: '/anniversary'
+      path: '/anniversary'
+      fullPath: '/anniversary'
+      preLoaderRoute: typeof AnniversaryRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated': {
@@ -354,6 +387,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AlbumCSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/_authenticated/admin/anniversary': {
+      id: '/_authenticated/admin/anniversary'
+      path: '/admin/anniversary'
+      fullPath: '/admin/anniversary'
+      preLoaderRoute: typeof AuthenticatedAdminAnniversaryRouteImport
+      parentRoute: typeof AuthenticatedRouteRoute
+    }
     '/.mcp/invoke-tool/$tool': {
       id: '/.mcp/invoke-tool/$tool'
       path: '/.mcp/invoke-tool/$tool'
@@ -393,6 +433,7 @@ declare module '@tanstack/react-router' {
 }
 
 interface AuthenticatedRouteRouteChildren {
+  AuthenticatedAdminAnniversaryRoute: typeof AuthenticatedAdminAnniversaryRoute
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
   AuthenticatedChaptersIdEditRoute: typeof AuthenticatedChaptersIdEditRoute
   AuthenticatedAdminChaptersIndexRoute: typeof AuthenticatedAdminChaptersIndexRoute
@@ -400,6 +441,7 @@ interface AuthenticatedRouteRouteChildren {
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
+  AuthenticatedAdminAnniversaryRoute: AuthenticatedAdminAnniversaryRoute,
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
   AuthenticatedChaptersIdEditRoute: AuthenticatedChaptersIdEditRoute,
   AuthenticatedAdminChaptersIndexRoute: AuthenticatedAdminChaptersIndexRoute,
@@ -412,6 +454,7 @@ const AuthenticatedRouteRouteWithChildren =
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRouteRoute: AuthenticatedRouteRouteWithChildren,
+  AnniversaryRoute: AnniversaryRoute,
   AuthRoute: AuthRoute,
   MapRoute: MapRoute,
   McpRoute: McpRoute,

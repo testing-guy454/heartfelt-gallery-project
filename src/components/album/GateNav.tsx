@@ -72,6 +72,8 @@ export function GateNav() {
           <Dot />
           <NavLink to="/album/timeline" label="Timeline" />
           <Dot />
+          <NavLink to="/anniversary" label="Our Journey" />
+          <Dot />
           <NavLink to="/map" label="Memory Map" />
           <Dot />
           <NavLink to="/album/favorites" label="Favorites" />
@@ -81,6 +83,7 @@ export function GateNav() {
           ) : (
             <NavLink to="/auth" label="Sign in" />
           )}
+
           <Dot />
           {identity && <IdentityTag name={identity.name} isAdmin={identity.isAdmin} />}
           <button
