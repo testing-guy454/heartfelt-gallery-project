@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WallRouteImport } from './routes/wall'
 import { Route as UnlockRouteImport } from './routes/unlock'
 import { Route as McpRouteImport } from './routes/mcp'
 import { Route as MapRouteImport } from './routes/map'
@@ -30,6 +31,11 @@ import { Route as AuthenticatedMyChaptersIndexRouteImport } from './routes/_auth
 import { Route as AuthenticatedAdminChaptersIndexRouteImport } from './routes/_authenticated/admin.chapters.index'
 import { Route as AuthenticatedChaptersIdEditRouteImport } from './routes/_authenticated/chapters.$id.edit'
 
+const WallRoute = WallRouteImport.update({
+  id: '/wall',
+  path: '/wall',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const UnlockRoute = UnlockRouteImport.update({
   id: '/unlock',
   path: '/unlock',
@@ -144,6 +150,7 @@ export interface FileRoutesByFullPath {
   '/map': typeof MapRoute
   '/mcp': typeof McpRoute
   '/unlock': typeof UnlockRoute
+  '/wall': typeof WallRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/album/favorites': typeof AlbumFavoritesRoute
@@ -165,6 +172,7 @@ export interface FileRoutesByTo {
   '/map': typeof MapRoute
   '/mcp': typeof McpRoute
   '/unlock': typeof UnlockRoute
+  '/wall': typeof WallRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/album/favorites': typeof AlbumFavoritesRoute
@@ -188,6 +196,7 @@ export interface FileRoutesById {
   '/map': typeof MapRoute
   '/mcp': typeof McpRoute
   '/unlock': typeof UnlockRoute
+  '/wall': typeof WallRoute
   '/.mcp/list-tools': typeof Char91DotmcpChar93ListToolsRoute
   '/.well-known/oauth-protected-resource': typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   '/album/favorites': typeof AlbumFavoritesRoute
@@ -211,6 +220,7 @@ export interface FileRouteTypes {
     | '/map'
     | '/mcp'
     | '/unlock'
+    | '/wall'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/album/favorites'
@@ -232,6 +242,7 @@ export interface FileRouteTypes {
     | '/map'
     | '/mcp'
     | '/unlock'
+    | '/wall'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/album/favorites'
@@ -254,6 +265,7 @@ export interface FileRouteTypes {
     | '/map'
     | '/mcp'
     | '/unlock'
+    | '/wall'
     | '/.mcp/list-tools'
     | '/.well-known/oauth-protected-resource'
     | '/album/favorites'
@@ -277,6 +289,7 @@ export interface RootRouteChildren {
   MapRoute: typeof MapRoute
   McpRoute: typeof McpRoute
   UnlockRoute: typeof UnlockRoute
+  WallRoute: typeof WallRoute
   Char91DotmcpChar93ListToolsRoute: typeof Char91DotmcpChar93ListToolsRoute
   Char91DotwellKnownChar93OauthProtectedResourceRoute: typeof Char91DotwellKnownChar93OauthProtectedResourceRoute
   AlbumFavoritesRoute: typeof AlbumFavoritesRoute
@@ -289,6 +302,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/wall': {
+      id: '/wall'
+      path: '/wall'
+      fullPath: '/wall'
+      preLoaderRoute: typeof WallRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/unlock': {
       id: '/unlock'
       path: '/unlock'
@@ -459,6 +479,7 @@ const rootRouteChildren: RootRouteChildren = {
   MapRoute: MapRoute,
   McpRoute: McpRoute,
   UnlockRoute: UnlockRoute,
+  WallRoute: WallRoute,
   Char91DotmcpChar93ListToolsRoute: Char91DotmcpChar93ListToolsRoute,
   Char91DotwellKnownChar93OauthProtectedResourceRoute:
     Char91DotwellKnownChar93OauthProtectedResourceRoute,

@@ -74,6 +74,8 @@ export function GateNav() {
           <Dot />
           <NavLink to="/anniversary" label="Our Journey" />
           <Dot />
+          <NavLink to="/wall" label="Polaroid Wall" />
+          <Dot />
           <NavLink to="/map" label="Memory Map" />
           <Dot />
           <NavLink to="/album/favorites" label="Favorites" />
@@ -123,7 +125,7 @@ function NavLink({
   to,
   label,
 }: {
-  to: "/album" | "/album/timeline" | "/album/favorites" | "/anniversary" | "/map" | "/my/chapters" | "/auth";
+  to: "/album" | "/album/timeline" | "/album/favorites" | "/anniversary" | "/wall" | "/map" | "/my/chapters" | "/auth";
   label: string;
 }) {
   return (
