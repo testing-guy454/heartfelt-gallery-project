@@ -1,79 +1,59 @@
-# A Virtual Photo Album — Plan
+# Memory Map
 
-A private, romantic photo album for your girlfriend, organized as **chapters** ("First Date", "Trips", "Little Everyday", etc.) with a secondary **timeline** view. Warm & elegant feel. Passcode-gated. You'll manage everything from a private admin page after signing in.
+A new `/map` page that lets you and Her revisit chapters by the place they happened, styled like an unfolded hand-drawn map inside the scrapbook.
 
-## What she'll see
+## Scope
 
-- **Cover page** — her name, a dedication line, and a single "Open" button. Soft cream backdrop, elegant serif title, gentle fade-in.
-- **Passcode gate** — she enters a shared passcode you give her. Once unlocked, it stays unlocked on her device.
-- **Home** — hero note from you, then a grid of **chapter cards** (cover photo + title + short description + date range). Small toggle to switch to **Timeline view** (all memories in chronological order with month/year headers).
-- **Chapter page** — chapter title, your written story/intro, then the photos. Each photo can have a title, date, and a longer caption/story underneath. Optional song for the chapter plays softly with a small floating player (mute/play control, never autoplay-loud).
-- **Photo lightbox** — click any photo to view large with its caption; arrow-key navigation.
+1. **Schema** — add optional `location_name`, `latitude`, `longitude` to `chapters`. Existing chapters keep working.
+2. **Admin editor** — add a "Memory Location" section in the chapter editor with search (OpenStreetMap Nominatim, no key needed), auto-filled lat/lng, and a "Pick on Map" mini-picker.
+3. **Public `/map` page** — vintage Leaflet map with handcrafted markers, cluster badges ("❤ 5 Memories"), scrapbook preview card, filters as paper tabs, empty state, mobile slide-up preview.
+4. **Nav** — add a "Memory Map" entry in `GateNav` with a compass-rose icon.
+5. **Lazy loading** — Leaflet + CSS loaded only on `/map` via dynamic import; map bundle excluded from other routes.
 
-## What you'll see (admin)
+## Visual direction
 
-- **/admin/login** — email + password sign-in (only your account works).
-- **/admin** — dashboard listing chapters. Create / rename / reorder / delete chapters. Set cover photo, description, date range, and a song URL per chapter.
-- **/admin/chapters/:id** — inside a chapter: upload photos (drag-and-drop, multi-file), reorder them, edit each photo's title / date / caption, delete.
-- Expandable by design: adding a new chapter or photo is just a form — no code changes needed once built.
+- Aged parchment tile overlay (CSS filter: sepia + soft blur + noise texture) applied over OpenStreetMap tiles so it reads as a printed travel-journal map, not Google Maps.
+- Markers: SVG wax seal / pressed flower / tiny heart, rotated slightly, with soft ink shadow. Cycled per chapter for variety.
+- Cluster badge: torn-paper rectangle with handwritten font, heart glyph + count.
+- Compass rose in the corner (decorative SVG), stitched border around the map frame, torn-edge mask on the container.
+- Preview card: postcard-style, lifts on open with a gentle rotate + scale.
 
-## Visual direction (Romantic & warm)
+## Filters
 
-- Palette: warm cream `#FAF6EF` background, deep rose `#B24A5E` accent, soft blush `#F3D9DA` surfaces, ink `#2A1F1F` text, muted gold `#C9A96A` details.
-- Type: elegant serif for headings (Cormorant Garamond), clean sans for body (Inter), an italic handwritten accent for signatures/dates (Caveat).
-- Motion: gentle fade + slight rise on scroll, soft image zoom on hover, page transitions cross-fade — nothing bouncy.
-- Details: rounded corners, subtle paper-grain background, thin gold divider between sections, small pressed-flower/heart flourishes used sparingly.
+Paper-tab row above the map: All · By Year · By Chapter · Favorites. "Trips" is skipped for now — no trip concept exists in the data model; can be added later once chapters can be grouped.
 
-## Development-period sample content
+## Files
 
-Three seeded chapters with 4–6 stock romantic photos each and placeholder captions ("Add your story here…") so the whole flow is browsable immediately. You'll replace them from the admin later — the sample images live only in the seed and can be deleted per photo.
+New:
+- `src/components/map/MemoryMap.tsx` — client-only Leaflet container, filter tabs, empty state
+- `src/components/map/MemoryMarker.tsx` — custom `L.divIcon` variants
+- `src/components/map/MemoryPreview.tsx` — postcard preview + mobile bottom sheet
+- `src/components/map/MemoryCluster.tsx` — cluster badge renderer
+- `src/components/map/VintageMapControls.tsx` — compass rose + zoom controls
+- `src/components/map/LocationPicker.tsx` — admin search + mini map (used in editor)
+- `src/lib/map.functions.ts` — `listMapChapters` server fn (public, only chapters with coords)
+- `src/routes/map.tsx` — public route, lazy loads MemoryMap via `React.lazy` + Suspense
+- `src/styles/leaflet-vintage.css` — overrides + tile filter
 
----
+Edited:
+- `src/routes/_authenticated/chapters.$id.edit.tsx` — Memory Location section using `LocationPicker`
+- `src/lib/admin.functions.ts` — extend `updateChapter` validator with the new fields
+- `src/components/album/GateNav.tsx` — add Memory Map link
+- migration for the three new columns
 
-## Technical section
+## Technical notes
 
-**Stack:** TanStack Start (already scaffolded) + Lovable Cloud (Supabase) for auth, database, and image storage. Tailwind v4 tokens defined in `src/styles.css`; shadcn components for forms/dialogs.
+- Leaflet + `leaflet.markercluster` installed via `bun add`. Both imported dynamically inside the `MemoryMap` component so the bundle only loads on `/map`.
+- Nominatim search called from the client with a descriptive `User-Agent` via a small server fn (`geocodeSearch`) to keep referrer-based rate limits sane and hide the origin.
+- Server fn `listMapChapters` uses the server publishable client (public read-only) — same pattern as existing public album fns — filtering `latitude is not null`.
+- RLS: existing chapters SELECT policy already allows public read of published data; the new columns inherit that. No new policies needed.
+- Grants: no new tables, so no new GRANTs.
+- Accessibility: markers are `<button>` elements inside Leaflet `divIcon` with `aria-label="Chapter title, location name"`. Preview card is a focus-trapped dialog on desktop, sheet on mobile. Filter tabs are a `role="tablist"`.
 
-**Auth:**
-- Email/password only. You are the sole admin — enforced via a `user_roles` table + `has_role()` security-definer function (never store role on profile).
-- **Shared passcode gate** for the album itself: server-only `ALBUM_PASSCODE` env var, verified in a `createServerFn` with timing-safe compare, unlocked flag stored in an encrypted `useSession` cookie (`SESSION_SECRET`). No per-visitor accounts.
+## Out of scope (kept simple, ask later if wanted)
 
-**Data model (Supabase):**
-- `chapters` — id, title, slug, description, cover_photo_id (nullable), song_url (nullable), date_start, date_end, sort_order, created_at.
-- `photos` — id, chapter_id (fk), storage_path, title, caption, taken_at, sort_order, created_at.
-- `user_roles` — (user_id, role enum `admin`) with `has_role()` SECURITY DEFINER.
-- Storage bucket `album-photos` (private). Signed URLs generated server-side for viewing.
-- RLS: `chapters` and `photos` — public SELECT gated by the shared passcode (reads go through a `createServerFn` that first checks the unlocked session, then queries with the server publishable client). All writes require `has_role(auth.uid(), 'admin')`. Explicit GRANTs for `authenticated` and `service_role`; `anon` gets no direct table access (server fn mediates).
+- "Trips" filter (needs a trips concept in the data model)
+- Route lines between chapters
+- Custom marker per-chapter selection in admin (auto-cycled for now)
 
-**Routes:**
-- `/` — cover / dedication
-- `/unlock` — passcode form
-- `/album` — chapters grid (gated)
-- `/album/timeline` — chronological view (gated)
-- `/album/c/$slug` — chapter page (gated)
-- `/auth` — admin login (public)
-- `/_authenticated/admin` — dashboard
-- `/_authenticated/admin/chapters/$id` — chapter editor
-
-**Server functions (`src/lib/*.functions.ts`):**
-- `unlockAlbum({ passcode })`, `lockAlbum()`
-- `listChapters()`, `getChapter(slug)`, `listTimeline()` — all gated on unlocked session
-- Admin fns behind `requireSupabaseAuth` + admin role check: `createChapter`, `updateChapter`, `deleteChapter`, `reorderChapters`, `uploadPhoto` (returns signed upload URL), `updatePhoto`, `deletePhoto`, `reorderPhotos`, `setChapterCover`.
-
-**Secrets to add:** `ALBUM_PASSCODE`, `SESSION_SECRET` (32+ chars, auto-generated).
-
-**Seed data:** migration inserts 3 sample chapters with Unsplash-style placeholder image URLs so the UI is populated during development.
-
-**Fonts:** loaded via `<link>` tags in `src/routes/__root.tsx` head (Cormorant Garamond, Inter, Caveat), referenced via `--font-*` tokens in `styles.css`.
-
-## Out of scope (say the word to add later)
-
-- Guest comments / reactions
-- Video support
-- Downloadable PDF album export
-- Multiple viewers with individual accounts
-- Sharing individual photos via link
-
----
-
-Approve and I'll build it end-to-end with the sample content so you can click through immediately, then you can sign in and start replacing photos.
+Ready to implement on approval.

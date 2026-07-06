@@ -23,6 +23,9 @@ export type Database = {
           date_start: string | null
           description: string | null
           id: string
+          latitude: number | null
+          location_name: string | null
+          longitude: number | null
           slug: string
           song_url: string | null
           sort_order: number
@@ -37,6 +40,9 @@ export type Database = {
           date_start?: string | null
           description?: string | null
           id?: string
+          latitude?: number | null
+          location_name?: string | null
+          longitude?: number | null
           slug: string
           song_url?: string | null
           sort_order?: number
@@ -51,6 +57,9 @@ export type Database = {
           date_start?: string | null
           description?: string | null
           id?: string
+          latitude?: number | null
+          location_name?: string | null
+          longitude?: number | null
           slug?: string
           song_url?: string | null
           sort_order?: number

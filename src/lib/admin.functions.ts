@@ -150,6 +150,7 @@ export const updateChapter = createServerFn({ method: "POST" })
   .inputValidator((data: {
     id: string; title?: string; description?: string | null; cover_url?: string | null;
     song_url?: string | null; date_start?: string | null; date_end?: string | null;
+    location_name?: string | null; latitude?: number | null; longitude?: number | null;
   }) => data)
   .handler(async ({ data, context }) => {
     await assertCanManageChapter(context, data.id);
