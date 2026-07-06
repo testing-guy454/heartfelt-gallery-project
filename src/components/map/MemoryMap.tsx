@@ -67,7 +67,8 @@ export function MemoryMap({ chapters }: { chapters: MapChapter[] }) {
         attributionControl: true,
         scrollWheelZoom: true,
         worldCopyJump: false,
-      }).setView([22, 79], 5);
+      }).setView([25.6, 85.5], 7); // Bihar on first render
+
 
       // Bhuvan (ISRO) — official Indian map service with correct borders for
       // Jammu & Kashmir and Arunachal Pradesh per the Survey of India.
