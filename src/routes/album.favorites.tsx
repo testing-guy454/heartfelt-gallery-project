@@ -1,7 +1,12 @@
 import { createFileRoute, Link, redirect } from "@tanstack/react-router";
-import { listFavorites } from "@/lib/album.functions";
+import { useServerFn } from "@tanstack/react-start";
+import { useEffect, useState } from "react";
+import { listFavorites, getFavoritePhotos } from "@/lib/album.functions";
+import { getFavoriteIds } from "@/lib/favorites";
 import { GateNav } from "@/components/album/GateNav";
+import { FavoriteButton } from "@/components/album/FavoriteButton";
 import { FloatingPetals, Flourish, HeartIcon } from "@/components/album/Ornaments";
+
 
 export const Route = createFileRoute("/album/favorites")({
   loader: async () => {
@@ -23,7 +28,27 @@ export const Route = createFileRoute("/album/favorites")({
 const TILTS = [-2.4, 1.8, -1.2, 2.6, -1.6, 1.4, -2.0, 0.9];
 
 function Favorites() {
-  const photos = Route.useLoaderData();
+  const adminFavorites = Route.useLoaderData();
+  const [herFavorites, setHerFavorites] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
+  const fetchFav = useServerFn(getFavoritePhotos);
+
+  useEffect(() => {
+    const ids = getFavoriteIds();
+    if (ids.length === 0) {
+      setLoading(false);
+      return;
+    }
+    fetchFav({ data: { photo_ids: ids } })
+      .then((photos: any[]) => setHerFavorites(photos))
+      .finally(() => setLoading(false));
+  }, [fetchFav]);
+
+
+  const byId = new Map<string, any>();
+  for (const p of adminFavorites) byId.set(p.id, p);
+  for (const p of herFavorites) byId.set(p.id, p);
+  const photos = [...byId.values()];
 
   return (
     <div className="relative min-h-screen">
@@ -37,15 +62,15 @@ function Favorites() {
           <h1 className="serif italic text-5xl md:text-7xl text-ink mt-2">Her Favorites</h1>
           <Flourish className="mt-6 mb-4" />
           <p className="text-muted-foreground max-w-md mx-auto italic leading-relaxed">
-            A little corner for the photos that always make her smile.
+            A little corner for the photos that always make her smile. Tap the heart on any chapter or timeline photo to add it here.
           </p>
         </header>
 
-        {photos.length === 0 ? (
+        {loading || photos.length === 0 ? (
           <div className="text-center py-16">
             <HeartIcon className="w-8 h-8 mx-auto text-[color:var(--rose-deep)]/50 mb-3" />
             <p className="text-muted-foreground italic">
-              No favorites yet — mark a few from the chapter pages.
+              {loading ? "Loading favorites…" : "No favorites yet — tap the heart on chapter or timeline photos to add them."}
             </p>
           </div>
         ) : (
@@ -60,11 +85,23 @@ function Favorites() {
                 >
                   <div className="polaroid rounded-sm">
                     <span className="washi-tape" />
-                    <img
-                      src={p.image_url}
-                      alt={p.title ?? ""}
-                      className="w-full object-cover"
-                    />
+                    <div className="relative">
+                      <img
+                        src={p.image_url}
+                        alt={p.title ?? ""}
+                        className="w-full object-cover"
+                      />
+                      <FavoriteButton
+                        photoId={p.id}
+                        className="absolute top-2 right-2"
+                        onToggle={(isFav) => {
+                          if (!isFav) {
+                            setHerFavorites((prev) => prev.filter((x) => x.id !== p.id));
+                          }
+                        }}
+                      />
+
+                    </div>
                     <figcaption className="pt-3 pb-1 text-center">
                       {p.title && (
                         <h3 className="serif italic text-xl text-ink">{p.title}</h3>

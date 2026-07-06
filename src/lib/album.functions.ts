@@ -85,3 +85,19 @@ export const listFavorites = createServerFn({ method: "GET" }).handler(async () 
   if (error) throw new Error(error.message);
   return data ?? [];
 });
+
+export const getFavoritePhotos = createServerFn({ method: "POST" })
+  .inputValidator((data: { photo_ids: string[] }) => data)
+  .handler(async ({ data }) => {
+    await requireUnlocked();
+    if (data.photo_ids.length === 0) return [];
+    const supabase = publicClient();
+    const { data: photos, error } = await supabase
+      .from("photos")
+      .select("id, image_url, title, caption, taken_at, chapter_id, chapters:chapter_id ( title, slug )")
+      .in("id", data.photo_ids)
+      .order("taken_at", { ascending: true, nullsFirst: false });
+    if (error) throw new Error(error.message);
+    return photos ?? [];
+  });
+

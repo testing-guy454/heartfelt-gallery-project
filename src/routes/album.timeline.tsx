@@ -1,7 +1,9 @@
 import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { listTimeline } from "@/lib/album.functions";
 import { GateNav } from "@/components/album/GateNav";
+import { FavoriteButton } from "@/components/album/FavoriteButton";
 import { FloatingPetals, Flourish, HeartIcon } from "@/components/album/Ornaments";
+
 
 export const Route = createFileRoute("/album/timeline")({
   loader: async () => {
@@ -78,12 +80,16 @@ function Timeline() {
                             style={{ transform: `rotate(${tilt}deg)` }}
                           >
                             <span className="washi-tape" />
-                            <img
-                              src={p.image_url}
-                              alt={p.title ?? ""}
-                              className="w-full aspect-[4/3] object-cover"
-                            />
+                            <div className="relative">
+                              <img
+                                src={p.image_url}
+                                alt={p.title ?? ""}
+                                className="w-full aspect-[4/3] object-cover"
+                              />
+                              <FavoriteButton photoId={p.id} className="absolute top-2 right-2" />
+                            </div>
                             <figcaption className="pt-3 text-center">
+
                               {p.title && (
                                 <h3 className="serif italic text-2xl text-ink">{p.title}</h3>
                               )}
