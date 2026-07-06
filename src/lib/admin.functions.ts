@@ -211,7 +211,7 @@ export const updatePhoto = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: { id: string; title?: string | null; caption?: string | null; taken_at?: string | null; image_url?: string; is_favorite?: boolean }) => data)
   .handler(async ({ data, context }) => {
-    await assertAdmin(context);
+    await assertCanManagePhoto(context, data.id);
     const { id, ...patch } = data;
     const { error } = await context.supabase.from("photos").update(patch).eq("id", id);
     if (error) throw new Error(error.message);
