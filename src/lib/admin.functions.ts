@@ -163,7 +163,7 @@ export const deleteChapter = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: { id: string }) => data)
   .handler(async ({ data, context }) => {
-    await assertAdmin(context);
+    await assertCanManageChapter(context, data.id);
     const { error } = await context.supabase.from("chapters").delete().eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
