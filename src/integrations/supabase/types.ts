@@ -68,6 +68,74 @@ export type Database = {
         }
         Relationships: []
       }
+      milestones: {
+        Row: {
+          chapter_id: string | null
+          cover_url: string | null
+          created_at: string
+          created_by: string | null
+          date: string
+          description: string | null
+          emoji: string | null
+          gallery_urls: string[]
+          handwritten_note: string | null
+          id: string
+          latitude: number | null
+          location_name: string | null
+          longitude: number | null
+          music_url: string | null
+          sort_order: number
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          chapter_id?: string | null
+          cover_url?: string | null
+          created_at?: string
+          created_by?: string | null
+          date: string
+          description?: string | null
+          emoji?: string | null
+          gallery_urls?: string[]
+          handwritten_note?: string | null
+          id?: string
+          latitude?: number | null
+          location_name?: string | null
+          longitude?: number | null
+          music_url?: string | null
+          sort_order?: number
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          chapter_id?: string | null
+          cover_url?: string | null
+          created_at?: string
+          created_by?: string | null
+          date?: string
+          description?: string | null
+          emoji?: string | null
+          gallery_urls?: string[]
+          handwritten_note?: string | null
+          id?: string
+          latitude?: number | null
+          location_name?: string | null
+          longitude?: number | null
+          music_url?: string | null
+          sort_order?: number
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "milestones_chapter_id_fkey"
+            columns: ["chapter_id"]
+            isOneToOne: false
+            referencedRelation: "chapters"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       photos: {
         Row: {
           caption: string | null
@@ -129,6 +197,27 @@ export type Database = {
           created_at?: string
           display_name?: string | null
           id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      relationship_settings: {
+        Row: {
+          id: boolean
+          start_date: string | null
+          tagline: string | null
+          updated_at: string
+        }
+        Insert: {
+          id?: boolean
+          start_date?: string | null
+          tagline?: string | null
+          updated_at?: string
+        }
+        Update: {
+          id?: boolean
+          start_date?: string | null
+          tagline?: string | null
           updated_at?: string
         }
         Relationships: []
