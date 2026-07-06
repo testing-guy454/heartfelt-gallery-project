@@ -39,6 +39,7 @@ async function landingAfterSignIn(): Promise<"/admin" | "/my/chapters"> {
 
 function Cover() {
   const { unlocked } = Route.useLoaderData();
+  const search = Route.useSearch();
   const router = useRouter();
   const unlock = useServerFn(unlockAlbum);
   const inputRef = useRef<HTMLInputElement>(null);
