@@ -102,7 +102,7 @@ function NavLink({
   to,
   label,
 }: {
-  to: "/album" | "/album/timeline" | "/album/favorites";
+  to: "/album" | "/album/timeline" | "/album/favorites" | "/my/chapters" | "/auth";
   label: string;
 }) {
   return (
