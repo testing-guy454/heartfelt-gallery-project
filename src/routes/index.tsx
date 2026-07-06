@@ -109,8 +109,8 @@ function Cover() {
       <Butterfly className="hidden md:block absolute left-20 bottom-16 w-8 text-[color:var(--rose-deep)]/60 animate-[sway_9s_ease-in-out_infinite]" />
 
       <form
-        onSubmit={onSubmit}
-        className={`relative z-10 w-full max-w-xl rise-1 ${error ? "shake" : ""}`}
+        onSubmit={mode === "whisper" ? onWhisper : onCredentials}
+        className={`relative z-10 w-full max-w-xl rise-1 ${shake ? "shake" : ""}`}
         style={{ transform: "rotate(-0.6deg)" }}
       >
         {/* vintage letter paper */}
@@ -124,7 +124,6 @@ function Cover() {
                 "url(\"data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='320' height='320'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4'/><feColorMatrix values='0 0 0 0 0.32 0 0 0 0 0.22 0 0 0 0 0.14 0 0 0 0.14 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>\")",
             }}
           />
-
 
           {/* tea stains */}
           <div className="pointer-events-none absolute top-10 right-14 w-28 h-28 rounded-full bg-[color:var(--sepia)]/12 blur-2xl" />
@@ -162,57 +161,111 @@ function Cover() {
               Every quiet morning, every messy laugh, every somewhere-we-got-lost — a little home for the moments I never want to forget.
             </p>
 
-            {/* input */}
-            <div className="mt-6 max-w-sm mx-auto">
-              <label
-                htmlFor="passcode"
-                className="block stamp-font text-[0.58rem] tracking-[0.42em] text-[color:var(--sepia)]/85 uppercase mb-2"
-              >
-                whisper the word
-              </label>
-              <input
-                id="passcode"
-                ref={inputRef}
-                name="passcode"
-                type="password"
-                autoComplete="off"
-                value={value}
-                onChange={(e) => {
-                  setValue(e.target.value);
-                  if (error) setError(false);
-                }}
-                placeholder="our word"
-                className="relative z-10 w-full bg-transparent text-center font-serif italic text-2xl sm:text-[1.6rem] text-ink px-2 py-3 border-b border-[color:var(--sepia)]/45 focus:border-[color:var(--rose-deep)] outline-none transition-colors tracking-[0.18em] caret-[color:var(--rose-deep)] placeholder:text-[color:var(--sepia)]/45 placeholder:italic placeholder:tracking-[0.18em]"
-              />
-
-              <div className="min-h-[1.5rem] mt-2 relative z-10">
-                {error ? (
-                  <p className="text-xs italic text-destructive">Not quite. Try again.</p>
-                ) : (
-                  <p className="text-[11px] italic text-muted-foreground/80">
-                    the one only you would guess
-                  </p>
-                )}
+            {mode === "whisper" ? (
+              <div className="mt-6 max-w-sm mx-auto">
+                <label
+                  htmlFor="passcode"
+                  className="block stamp-font text-[0.58rem] tracking-[0.42em] text-[color:var(--sepia)]/85 uppercase mb-2"
+                >
+                  whisper the word
+                </label>
+                <input
+                  id="passcode"
+                  ref={inputRef}
+                  name="passcode"
+                  type="password"
+                  autoComplete="off"
+                  value={value}
+                  onChange={(e) => { setValue(e.target.value); if (error) setError(null); }}
+                  placeholder="our word"
+                  className="relative z-10 w-full bg-transparent text-center font-serif italic text-2xl sm:text-[1.6rem] text-ink px-2 py-3 border-b border-[color:var(--sepia)]/45 focus:border-[color:var(--rose-deep)] outline-none transition-colors tracking-[0.18em] caret-[color:var(--rose-deep)] placeholder:text-[color:var(--sepia)]/45 placeholder:italic placeholder:tracking-[0.18em]"
+                />
+                <div className="min-h-[1.5rem] mt-2 relative z-10">
+                  {error ? (
+                    <p className="text-xs italic text-destructive">{error}</p>
+                  ) : (
+                    <p className="text-[11px] italic text-muted-foreground/80">
+                      the one only you would guess
+                    </p>
+                  )}
+                </div>
+                <button
+                  type="submit"
+                  disabled={loading || !value.trim()}
+                  className="mt-5 group inline-flex items-center gap-3 px-8 py-3 rounded-full bg-[color:var(--rose-deep)] text-[color:var(--primary-foreground)] text-[0.72rem] tracking-[0.32em] uppercase font-medium transition-all duration-300 hover:bg-[color:var(--pink-vivid)] hover:shadow-[0_20px_40px_-18px_color-mix(in_oklab,var(--rose-deep)_70%,transparent)] disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  <HeartIcon className="w-3.5 h-3.5" />
+                  <span>{loading ? "opening" : "open the album"}</span>
+                </button>
               </div>
-
-              <button
-                type="submit"
-                disabled={loading || !value.trim()}
-                className="mt-5 group inline-flex items-center gap-3 px-8 py-3 rounded-full bg-[color:var(--rose-deep)] text-[color:var(--primary-foreground)] text-[0.72rem] tracking-[0.32em] uppercase font-medium transition-all duration-300 hover:bg-[color:var(--pink-vivid)] hover:shadow-[0_20px_40px_-18px_color-mix(in_oklab,var(--rose-deep)_70%,transparent)] disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                <HeartIcon className="w-3.5 h-3.5" />
-                <span>{loading ? "opening" : "open the album"}</span>
-              </button>
-            </div>
+            ) : (
+              <div className="mt-6 max-w-sm mx-auto text-left space-y-3">
+                <p className="stamp-font text-[0.58rem] tracking-[0.42em] text-[color:var(--sepia)]/85 uppercase text-center mb-1">
+                  {mode === "signup" ? "make yourself a keeper" : "sign in as keeper"}
+                </p>
+                {mode === "signup" && (
+                  <label className="block text-sm">
+                    <span className="text-muted-foreground text-xs italic">your name</span>
+                    <input
+                      type="text" required maxLength={40}
+                      value={displayName} onChange={(e) => setDisplayName(e.target.value)}
+                      className="mt-1 w-full bg-transparent border-b border-[color:var(--sepia)]/45 focus:border-[color:var(--rose-deep)] outline-none py-2 font-serif italic text-lg text-ink"
+                    />
+                  </label>
+                )}
+                <label className="block text-sm">
+                  <span className="text-muted-foreground text-xs italic">email</span>
+                  <input
+                    type="email" required
+                    value={email} onChange={(e) => setEmail(e.target.value)}
+                    className="mt-1 w-full bg-transparent border-b border-[color:var(--sepia)]/45 focus:border-[color:var(--rose-deep)] outline-none py-2 font-serif italic text-lg text-ink"
+                  />
+                </label>
+                <label className="block text-sm">
+                  <span className="text-muted-foreground text-xs italic">password</span>
+                  <input
+                    type="password" required minLength={6}
+                    value={password} onChange={(e) => setPassword(e.target.value)}
+                    className="mt-1 w-full bg-transparent border-b border-[color:var(--sepia)]/45 focus:border-[color:var(--rose-deep)] outline-none py-2 font-serif italic text-lg text-ink"
+                  />
+                </label>
+                <div className="min-h-[1.25rem]">
+                  {error && <p className="text-xs italic text-destructive text-center">{error}</p>}
+                </div>
+                <div className="text-center">
+                  <button
+                    type="submit"
+                    disabled={loading}
+                    className="mt-1 inline-flex items-center gap-3 px-8 py-3 rounded-full bg-[color:var(--rose-deep)] text-[color:var(--primary-foreground)] text-[0.72rem] tracking-[0.32em] uppercase font-medium transition-all duration-300 hover:bg-[color:var(--pink-vivid)] disabled:opacity-50"
+                  >
+                    <HeartIcon className="w-3.5 h-3.5" />
+                    <span>{loading ? "…" : mode === "signup" ? "create account" : "sign in"}</span>
+                  </button>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => { setMode(mode === "signin" ? "signup" : "signin"); setError(null); }}
+                  className="block mx-auto text-[11px] italic text-muted-foreground/80 hover:text-[color:var(--rose-deep)]"
+                >
+                  {mode === "signin" ? "new here? create an account →" : "already have an account? sign in →"}
+                </button>
+              </div>
+            )}
 
             <div className="gold-divider mt-6 mb-3 mx-auto w-40" />
-            <p className="stamp-font text-[9px] uppercase tracking-[0.35em] text-[color:var(--sepia)]/80">
-              hand-made · no. 001
-            </p>
+
+            <button
+              type="button"
+              onClick={() => { setMode(mode === "whisper" ? "signin" : "whisper"); setError(null); }}
+              className="stamp-font text-[9px] uppercase tracking-[0.35em] text-[color:var(--sepia)]/80 hover:text-[color:var(--rose-deep)]"
+            >
+              {mode === "whisper" ? "keeper? sign in →" : "← back to whisper the word"}
+            </button>
           </div>
 
         </div>
       </form>
+
 
       <style>{`
         @keyframes shakeX {
