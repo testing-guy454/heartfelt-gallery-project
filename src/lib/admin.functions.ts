@@ -222,7 +222,7 @@ export const deletePhoto = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: { id: string }) => data)
   .handler(async ({ data, context }) => {
-    await assertAdmin(context);
+    await assertCanManagePhoto(context, data.id);
     const { error } = await context.supabase.from("photos").delete().eq("id", data.id);
     if (error) throw new Error(error.message);
     return { ok: true };
