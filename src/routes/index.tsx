@@ -113,6 +113,12 @@ function Cover() {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
       }
+      const search = Route.useSearch.getState?.() ?? {};
+      const nextParam = safeNext((search as { next?: string }).next);
+      if (nextParam) {
+        window.location.href = nextParam;
+        return;
+      }
       const to = await landingAfterSignIn();
       router.navigate({ to });
     } catch (e: any) {
