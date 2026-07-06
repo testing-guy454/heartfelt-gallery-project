@@ -1,16 +1,27 @@
 import { Link, useRouter } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
+import { useEffect, useState } from "react";
 import { lockAlbum } from "@/lib/gate.functions";
+import { supabase } from "@/integrations/supabase/client";
 import { SealIcon } from "./Ornaments";
 
 export function GateNav() {
   const router = useRouter();
   const lock = useServerFn(lockAlbum);
+  const [signedIn, setSignedIn] = useState<boolean>(false);
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => setSignedIn(!!data.user));
+    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => setSignedIn(!!session?.user));
+    return () => { sub.subscription.unsubscribe(); };
+  }, []);
+
   async function onLock() {
     await lock();
     await router.invalidate();
     router.navigate({ to: "/" });
   }
+
 
   return (
     <nav
