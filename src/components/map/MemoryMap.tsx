@@ -54,22 +54,31 @@ export function MemoryMap({ chapters }: { chapters: MapChapter[] }) {
       await import("leaflet.markercluster");
       await import("leaflet.markercluster/dist/MarkerCluster.css");
       await import("leaflet.markercluster/dist/MarkerCluster.Default.css");
-      // Correct Indian boundaries (Jammu & Kashmir, Arunachal Pradesh) per Survey of India
-      const { extendLeaflet } = await import("@india-boundary-corrector/leaflet-layer");
-      extendLeaflet(L);
       if (cancelled || !mapEl.current) return;
+
+
+
+
 
       const map = L.map(mapEl.current, {
         zoomControl: true,
         attributionControl: true,
         scrollWheelZoom: true,
-        worldCopyJump: true,
+        worldCopyJump: false,
       }).setView([22, 79], 5);
 
-      (L as any).tileLayer.indiaBoundaryCorrected("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: "&copy; OpenStreetMap contributors",
-        maxZoom: 18,
-      }).addTo(map);
+      // Bhuvan (ISRO) — official Indian map service with correct borders for
+      // Jammu & Kashmir and Arunachal Pradesh per the Survey of India.
+      L.tileLayer(
+        "https://bhuvan-vec1.nrsc.gov.in/bhuvan/gwc/service/tms/1.0.0/india3@EPSG:900913@png/{z}/{x}/{y}.png",
+        {
+          tms: true,
+          attribution: "&copy; ISRO Bhuvan",
+          maxZoom: 18,
+          minZoom: 4,
+        },
+      ).addTo(map);
+
 
 
       mapRef.current = { map, L };
