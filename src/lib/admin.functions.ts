@@ -260,7 +260,7 @@ export const uploadPhoto = createServerFn({ method: "POST" })
     taken_at?: string | null;
   }) => data)
   .handler(async ({ data, context }) => {
-    await assertAdmin(context);
+    await assertCanManageChapter(context, data.chapter_id);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     const bin = atob(data.data_base64);
