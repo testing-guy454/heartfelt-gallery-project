@@ -14,9 +14,11 @@ export function MemoryMap({ chapters }: { chapters: MapChapter[] }) {
   const mapEl = useRef<HTMLDivElement | null>(null);
   const mapRef = useRef<any>(null);
   const layerRef = useRef<any>(null);
+  const didInitialViewRef = useRef(false);
   const [selected, setSelected] = useState<MapChapter | null>(null);
   const [filter, setFilter] = useState<Filter>({ kind: "all" });
   const [ready, setReady] = useState(false);
+
 
   const years = useMemo(() => {
     const s = new Set<number>();
@@ -65,7 +67,8 @@ export function MemoryMap({ chapters }: { chapters: MapChapter[] }) {
         attributionControl: true,
         scrollWheelZoom: true,
         worldCopyJump: false,
-      }).setView([22, 79], 5);
+      }).setView([25.6, 85.5], 7); // Bihar on first render
+
 
       // Bhuvan (ISRO) — official Indian map service with correct borders for
       // Jammu & Kashmir and Arunachal Pradesh per the Survey of India.
@@ -141,9 +144,15 @@ export function MemoryMap({ chapters }: { chapters: MapChapter[] }) {
     map.addLayer(cluster);
     layerRef.current = cluster;
 
-    // Fit bounds gently
-    const bounds = L.latLngBounds(filtered.map((c) => [c.latitude, c.longitude] as [number, number]));
-    if (bounds.isValid()) map.fitBounds(bounds.pad(0.35), { animate: true, maxZoom: 8 });
+    // On the very first render, keep the initial Bihar view. Only fit bounds
+    // for subsequent filter/data changes.
+    if (didInitialViewRef.current) {
+      const bounds = L.latLngBounds(filtered.map((c) => [c.latitude, c.longitude] as [number, number]));
+      if (bounds.isValid()) map.fitBounds(bounds.pad(0.35), { animate: true, maxZoom: 8 });
+    } else {
+      didInitialViewRef.current = true;
+    }
+
   }, [ready, filtered]);
 
   if (chapters.length === 0) return <EmptyState />;
