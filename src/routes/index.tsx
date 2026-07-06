@@ -12,9 +12,18 @@ import {
 } from "@/components/album/Ornaments";
 
 export const Route = createFileRoute("/")({
+  validateSearch: (s: Record<string, unknown>) => ({
+    next: typeof s.next === "string" ? s.next : undefined,
+  }),
   loader: async () => await isAlbumUnlocked(),
   component: Cover,
 });
+
+function safeNext(next: string | undefined): string | null {
+  if (!next) return null;
+  if (!next.startsWith("/") || next.startsWith("//")) return null;
+  return next;
+}
 
 async function landingAfterSignIn(): Promise<"/admin" | "/my/chapters"> {
   const { data } = await supabase.auth.getUser();
@@ -30,6 +39,7 @@ async function landingAfterSignIn(): Promise<"/admin" | "/my/chapters"> {
 
 function Cover() {
   const { unlocked } = Route.useLoaderData();
+  const search = Route.useSearch();
   const router = useRouter();
   const unlock = useServerFn(unlockAlbum);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -103,6 +113,11 @@ function Cover() {
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });
         if (error) throw error;
+      }
+      const nextParam = safeNext(search.next);
+      if (nextParam) {
+        window.location.href = nextParam;
+        return;
       }
       const to = await landingAfterSignIn();
       router.navigate({ to });
