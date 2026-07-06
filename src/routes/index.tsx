@@ -2,6 +2,7 @@ import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState } from "react";
 import { unlockAlbum, isAlbumUnlocked } from "@/lib/gate.functions";
+import { supabase } from "@/integrations/supabase/client";
 import {
   FloatingPetals,
   HeartIcon,
@@ -15,35 +16,85 @@ export const Route = createFileRoute("/")({
   component: Cover,
 });
 
+async function landingAfterSignIn(): Promise<"/admin" | "/my/chapters"> {
+  const { data } = await supabase.auth.getUser();
+  if (!data.user) return "/my/chapters";
+  const { data: role } = await supabase
+    .from("user_roles")
+    .select("role")
+    .eq("user_id", data.user.id)
+    .eq("role", "admin")
+    .maybeSingle();
+  return role ? "/admin" : "/my/chapters";
+}
+
 function Cover() {
   const { unlocked } = Route.useLoaderData();
   const router = useRouter();
   const unlock = useServerFn(unlockAlbum);
   const inputRef = useRef<HTMLInputElement>(null);
+  const [mode, setMode] = useState<"whisper" | "signin" | "signup">("whisper");
   const [value, setValue] = useState("");
-  const [error, setError] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [displayName, setDisplayName] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [shake, setShake] = useState(false);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (unlocked) router.navigate({ to: "/album" });
   }, [unlocked, router]);
 
-  async function onSubmit(e: React.FormEvent<HTMLFormElement>) {
+  async function onWhisper(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     if (!value.trim()) return;
     setLoading(true);
-    setError(false);
+    setError(null);
     const res = await unlock({ data: { passcode: value } });
     if (res.ok) {
       await router.invalidate();
       router.navigate({ to: "/album" });
     } else {
       setLoading(false);
-      setError(true);
+      setError("Not quite. Try again.");
+      setShake(true);
+      setTimeout(() => setShake(false), 400);
       inputRef.current?.focus();
       inputRef.current?.select();
     }
   }
+
+  async function onCredentials(e: React.FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    setLoading(true);
+    setError(null);
+    try {
+      if (mode === "signup") {
+        if (!displayName.trim()) throw new Error("Please add a name so your chapters can be credited.");
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            emailRedirectTo: `${window.location.origin}/my/chapters`,
+            data: { display_name: displayName.trim() },
+          },
+        });
+        if (error) throw error;
+      } else {
+        const { error } = await supabase.auth.signInWithPassword({ email, password });
+        if (error) throw error;
+      }
+      const to = await landingAfterSignIn();
+      router.navigate({ to });
+    } catch (e: any) {
+      setError(e.message ?? "Sign in failed");
+      setShake(true);
+      setTimeout(() => setShake(false), 400);
+      setLoading(false);
+    }
+  }
+
 
   return (
     <div className="relative h-screen flex items-center justify-center px-6 py-6 overflow-hidden">
