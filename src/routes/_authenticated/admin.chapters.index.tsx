@@ -25,7 +25,10 @@ import {
   reorderChapters,
 } from "@/lib/admin.functions";
 
+import { requireAdminOrRedirect } from "@/lib/role-guard";
+
 export const Route = createFileRoute("/_authenticated/admin/chapters/")({
+  beforeLoad: async () => { await requireAdminOrRedirect(); },
   component: ChaptersManager,
 });
 
