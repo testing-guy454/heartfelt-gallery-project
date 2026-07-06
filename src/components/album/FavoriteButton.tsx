@@ -4,16 +4,24 @@ import { isFavorite, toggleFavorite } from "@/lib/favorites";
 export function FavoriteButton({
   photoId,
   className = "",
+  onToggle,
 }: {
   photoId: string;
   className?: string;
+  onToggle?: (isFavorite: boolean) => void;
 }) {
   const [fav, setFav] = useState(() => isFavorite(photoId));
+
+  function onClick() {
+    const next = toggleFavorite(photoId);
+    setFav(next);
+    onToggle?.(next);
+  }
 
   return (
     <button
       type="button"
-      onClick={() => setFav(toggleFavorite(photoId))}
+      onClick={onClick}
       aria-label={fav ? "Remove from favorites" : "Add to favorites"}
       title={fav ? "Remove from favorites" : "Add to favorites"}
       className={[
@@ -36,3 +44,4 @@ export function FavoriteButton({
     </button>
   );
 }
+
