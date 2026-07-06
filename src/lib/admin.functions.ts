@@ -232,7 +232,7 @@ export const reorderPhotos = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: { chapter_id: string; photo_ids: string[] }) => data)
   .handler(async ({ data, context }) => {
-    await assertAdmin(context);
+    await assertCanManageChapter(context, data.chapter_id);
     const results = await Promise.all(
       data.photo_ids.map((id, idx) =>
         context.supabase
