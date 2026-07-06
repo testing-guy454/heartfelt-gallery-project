@@ -59,6 +59,12 @@ export function GateNav() {
           <Dot />
           <NavLink to="/album/favorites" label="Favorites" />
           <Dot />
+          {signedIn ? (
+            <NavLink to="/my/chapters" label="Your chapters" />
+          ) : (
+            <NavLink to="/auth" label="Sign in" />
+          )}
+          <Dot />
           <button
             onClick={onLock}
             className="group relative serif italic text-[15px] md:text-[16px] leading-none text-[color:var(--ink)]/60 hover:text-[color:var(--rose-deep)] transition-colors inline-flex items-center gap-1.5"
