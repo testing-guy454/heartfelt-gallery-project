@@ -119,19 +119,40 @@ export function LocationPicker({
       </label>
 
       {results.length > 0 && (
-        <ul className="paper rounded-sm p-2 max-h-56 overflow-auto text-sm">
-          {results.map((r, i) => (
-            <li key={i}>
-              <button
-                type="button"
-                onClick={() => selectResult(r)}
-                className="w-full text-left px-2 py-1 rounded hover:bg-[color:var(--blush)]/40 serif italic"
-              >
-                {r.display_name}
-              </button>
-            </li>
-          ))}
-        </ul>
+        <div>
+          <p className="stamp-font text-[10px] uppercase tracking-[0.25em] text-[color:var(--sepia)] mb-1">
+            {results.length} match{results.length === 1 ? "" : "es"} — tap one to pin it
+          </p>
+          <ul className="paper rounded-sm p-1 max-h-56 overflow-auto text-sm divide-y divide-[color:var(--sepia)]/20">
+            {results.map((r, i) => (
+              <li key={i}>
+                <button
+                  type="button"
+                  onClick={() => selectResult(r)}
+                  className="w-full text-left px-3 py-2 rounded serif italic hover:bg-[color:var(--blush)]/50 hover:text-[color:var(--rose-deep)] transition flex items-start gap-2 group"
+                >
+                  <span className="text-[color:var(--pink-vivid)] mt-0.5 shrink-0 group-hover:scale-110 transition">📍</span>
+                  <span className="flex-1">{r.display_name}</span>
+                  <span className="stamp-font text-[9px] uppercase tracking-[0.2em] text-[color:var(--sepia)]/70 opacity-0 group-hover:opacity-100 transition shrink-0 self-center">Pin here →</span>
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      {value.latitude != null && value.longitude != null && results.length === 0 && (
+        <div
+          className="inline-flex items-center gap-2 px-3 py-1.5 stamp-font text-[10px] uppercase tracking-[0.25em]"
+          style={{
+            background: "color-mix(in oklab, var(--blush) 45%, var(--letter-paper))",
+            border: "1px solid color-mix(in oklab, var(--rose-deep) 30%, transparent)",
+            color: "var(--rose-deep)",
+            clipPath: "polygon(4% 0%, 100% 0%, 100% 100%, 0% 100%, 0% 12%)",
+          }}
+        >
+          ✓ Location pinned
+        </div>
       )}
 
       <div className="grid grid-cols-2 gap-3">
