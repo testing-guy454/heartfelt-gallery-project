@@ -129,7 +129,7 @@ function MyChapters() {
               <p className="text-xs text-muted-foreground">/{c.slug}</p>
               {c.description && <p className="text-sm text-muted-foreground mt-1 line-clamp-1">{c.description}</p>}
             </div>
-            <Link to="/admin/chapters/$id" params={{ id: c.id }} className="text-sm text-primary underline">
+            <Link to="/chapters/$id/edit" params={{ id: c.id }} className="text-sm text-primary underline">
               Edit
             </Link>
             <button onClick={() => onDelete(c.id)} className="text-sm text-destructive">Delete</button>

@@ -24,7 +24,7 @@ import { Route as AlbumCSlugRouteImport } from './routes/album.c.$slug'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
 import { Route as AuthenticatedMyChaptersIndexRouteImport } from './routes/_authenticated/my.chapters.index'
 import { Route as AuthenticatedAdminChaptersIndexRouteImport } from './routes/_authenticated/admin.chapters.index'
-import { Route as AuthenticatedAdminChaptersIdRouteImport } from './routes/_authenticated/admin.chapters.$id'
+import { Route as AuthenticatedChaptersIdEditRouteImport } from './routes/_authenticated/chapters.$id.edit'
 
 const UnlockRoute = UnlockRouteImport.update({
   id: '/unlock',
@@ -105,10 +105,10 @@ const AuthenticatedAdminChaptersIndexRoute =
     path: '/admin/chapters/',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
-const AuthenticatedAdminChaptersIdRoute =
-  AuthenticatedAdminChaptersIdRouteImport.update({
-    id: '/admin/chapters/$id',
-    path: '/admin/chapters/$id',
+const AuthenticatedChaptersIdEditRoute =
+  AuthenticatedChaptersIdEditRouteImport.update({
+    id: '/chapters/$id/edit',
+    path: '/chapters/$id/edit',
     getParentRoute: () => AuthenticatedRouteRoute,
   } as any)
 
@@ -125,7 +125,7 @@ export interface FileRoutesByFullPath {
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/album/c/$slug': typeof AlbumCSlugRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
-  '/admin/chapters/$id': typeof AuthenticatedAdminChaptersIdRoute
+  '/chapters/$id/edit': typeof AuthenticatedChaptersIdEditRoute
   '/admin/chapters/': typeof AuthenticatedAdminChaptersIndexRoute
   '/my/chapters/': typeof AuthenticatedMyChaptersIndexRoute
 }
@@ -142,7 +142,7 @@ export interface FileRoutesByTo {
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/album/c/$slug': typeof AlbumCSlugRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
-  '/admin/chapters/$id': typeof AuthenticatedAdminChaptersIdRoute
+  '/chapters/$id/edit': typeof AuthenticatedChaptersIdEditRoute
   '/admin/chapters': typeof AuthenticatedAdminChaptersIndexRoute
   '/my/chapters': typeof AuthenticatedMyChaptersIndexRoute
 }
@@ -161,7 +161,7 @@ export interface FileRoutesById {
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/album/c/$slug': typeof AlbumCSlugRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
-  '/_authenticated/admin/chapters/$id': typeof AuthenticatedAdminChaptersIdRoute
+  '/_authenticated/chapters/$id/edit': typeof AuthenticatedChaptersIdEditRoute
   '/_authenticated/admin/chapters/': typeof AuthenticatedAdminChaptersIndexRoute
   '/_authenticated/my/chapters/': typeof AuthenticatedMyChaptersIndexRoute
 }
@@ -180,7 +180,7 @@ export interface FileRouteTypes {
     | '/.mcp/invoke-tool/$tool'
     | '/album/c/$slug'
     | '/admin/'
-    | '/admin/chapters/$id'
+    | '/chapters/$id/edit'
     | '/admin/chapters/'
     | '/my/chapters/'
   fileRoutesByTo: FileRoutesByTo
@@ -197,7 +197,7 @@ export interface FileRouteTypes {
     | '/.mcp/invoke-tool/$tool'
     | '/album/c/$slug'
     | '/admin'
-    | '/admin/chapters/$id'
+    | '/chapters/$id/edit'
     | '/admin/chapters'
     | '/my/chapters'
   id:
@@ -215,7 +215,7 @@ export interface FileRouteTypes {
     | '/.mcp/invoke-tool/$tool'
     | '/album/c/$slug'
     | '/_authenticated/admin/'
-    | '/_authenticated/admin/chapters/$id'
+    | '/_authenticated/chapters/$id/edit'
     | '/_authenticated/admin/chapters/'
     | '/_authenticated/my/chapters/'
   fileRoutesById: FileRoutesById
@@ -342,11 +342,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAdminChaptersIndexRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
-    '/_authenticated/admin/chapters/$id': {
-      id: '/_authenticated/admin/chapters/$id'
-      path: '/admin/chapters/$id'
-      fullPath: '/admin/chapters/$id'
-      preLoaderRoute: typeof AuthenticatedAdminChaptersIdRouteImport
+    '/_authenticated/chapters/$id/edit': {
+      id: '/_authenticated/chapters/$id/edit'
+      path: '/chapters/$id/edit'
+      fullPath: '/chapters/$id/edit'
+      preLoaderRoute: typeof AuthenticatedChaptersIdEditRouteImport
       parentRoute: typeof AuthenticatedRouteRoute
     }
   }
@@ -354,14 +354,14 @@ declare module '@tanstack/react-router' {
 
 interface AuthenticatedRouteRouteChildren {
   AuthenticatedAdminIndexRoute: typeof AuthenticatedAdminIndexRoute
-  AuthenticatedAdminChaptersIdRoute: typeof AuthenticatedAdminChaptersIdRoute
+  AuthenticatedChaptersIdEditRoute: typeof AuthenticatedChaptersIdEditRoute
   AuthenticatedAdminChaptersIndexRoute: typeof AuthenticatedAdminChaptersIndexRoute
   AuthenticatedMyChaptersIndexRoute: typeof AuthenticatedMyChaptersIndexRoute
 }
 
 const AuthenticatedRouteRouteChildren: AuthenticatedRouteRouteChildren = {
   AuthenticatedAdminIndexRoute: AuthenticatedAdminIndexRoute,
-  AuthenticatedAdminChaptersIdRoute: AuthenticatedAdminChaptersIdRoute,
+  AuthenticatedChaptersIdEditRoute: AuthenticatedChaptersIdEditRoute,
   AuthenticatedAdminChaptersIndexRoute: AuthenticatedAdminChaptersIndexRoute,
   AuthenticatedMyChaptersIndexRoute: AuthenticatedMyChaptersIndexRoute,
 }

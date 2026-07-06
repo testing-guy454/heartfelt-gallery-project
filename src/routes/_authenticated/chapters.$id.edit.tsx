@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
 import { useEffect, useRef, useState } from "react";
 import {
@@ -26,8 +26,9 @@ import {
   deletePhoto,
   reorderPhotos,
 } from "@/lib/admin.functions";
+import { currentUserIsAdmin } from "@/lib/role-guard";
 
-export const Route = createFileRoute("/_authenticated/admin/chapters/$id")({
+export const Route = createFileRoute("/_authenticated/chapters/$id/edit")({
   component: EditChapter,
 });
 
@@ -58,6 +59,7 @@ function fileToBase64(file: File): Promise<string> {
 
 function EditChapter() {
   const { id } = Route.useParams();
+  const router = useRouter();
   const load = useServerFn(adminGetChapter);
   const saveChapter = useServerFn(updateChapter);
   const upload = useServerFn(uploadPhoto);
@@ -70,6 +72,7 @@ function EditChapter() {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(0);
   const [uploadError, setUploadError] = useState<string | null>(null);
+  const [backTo, setBackTo] = useState<"/admin" | "/my/chapters">("/my/chapters");
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [dragOver, setDragOver] = useState(false);
 
@@ -83,7 +86,11 @@ function EditChapter() {
     setChapter(r.chapter);
     setPhotos(r.photos as Photo[]);
   }
-  useEffect(() => { refresh(); /* eslint-disable-next-line react-hooks/exhaustive-deps */ }, [id]);
+  useEffect(() => {
+    refresh();
+    currentUserIsAdmin().then((isAdmin) => setBackTo(isAdmin ? "/admin" : "/my/chapters"));
+    /* eslint-disable-next-line react-hooks/exhaustive-deps */
+  }, [id]);
 
   async function onSaveChapter(e: React.FormEvent) {
     e.preventDefault();
@@ -158,7 +165,12 @@ function EditChapter() {
 
   return (
     <div className="max-w-3xl mx-auto px-6 py-12">
-      <Link to="/admin" className="text-sm text-primary underline">← back</Link>
+      <button
+        onClick={() => router.navigate({ to: backTo })}
+        className="text-sm text-primary underline"
+      >
+        ← back
+      </button>
 
       <form onSubmit={onSaveChapter} className="paper rounded-xl p-6 mt-6 space-y-4">
         <h1 className="serif italic text-3xl">Chapter details</h1>

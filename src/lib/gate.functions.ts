@@ -10,11 +10,11 @@ function sessionConfig() {
   return {
     password,
     name: "album-gate",
-    maxAge: 60 * 60 * 24 * 60, // 60 days
+    maxAge: 60 * 60 * 24 * 60, // 60 days — refreshed on every unlocked read (sliding)
     cookie: {
       httpOnly: true,
       secure: true,
-      sameSite: "none" as const,
+      sameSite: "lax" as const,
       path: "/",
     },
   };
@@ -28,6 +28,12 @@ function passwordMatches(input: string, expected: string): boolean {
 
 export const isAlbumUnlocked = createServerFn({ method: "GET" }).handler(async () => {
   const session = await useSession<GateSession>(sessionConfig());
+  // Sliding expiration: touch the session on every unlocked read so active
+  // visitors don't lose access at day 60. Writing the same value re-issues
+  // the cookie with a fresh 60-day maxAge.
+  if (session.data.unlocked) {
+    await session.update({ unlocked: true });
+  }
   return { unlocked: !!session.data.unlocked };
 });
 

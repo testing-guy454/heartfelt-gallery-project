@@ -9,10 +9,25 @@ export function GateNav() {
   const router = useRouter();
   const lock = useServerFn(lockAlbum);
   const [signedIn, setSignedIn] = useState<boolean>(false);
+  const [identity, setIdentity] = useState<{ name: string; isAdmin: boolean } | null>(null);
+
+  async function loadIdentity() {
+    const { data } = await supabase.auth.getUser();
+    if (!data.user) { setSignedIn(false); setIdentity(null); return; }
+    setSignedIn(true);
+    const [{ data: prof }, { data: role }] = await Promise.all([
+      supabase.from("profiles").select("display_name").eq("id", data.user.id).maybeSingle(),
+      supabase.from("user_roles").select("role").eq("user_id", data.user.id).eq("role", "admin").maybeSingle(),
+    ]);
+    setIdentity({
+      name: prof?.display_name ?? data.user.email?.split("@")[0] ?? "you",
+      isAdmin: !!role,
+    });
+  }
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => setSignedIn(!!data.user));
-    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => setSignedIn(!!session?.user));
+    loadIdentity();
+    const { data: sub } = supabase.auth.onAuthStateChange(() => { loadIdentity(); });
     return () => { sub.subscription.unsubscribe(); };
   }, []);
 
@@ -65,6 +80,7 @@ export function GateNav() {
             <NavLink to="/auth" label="Sign in" />
           )}
           <Dot />
+          {identity && <IdentityTag name={identity.name} isAdmin={identity.isAdmin} />}
           <button
             onClick={onLock}
             className="group relative serif italic text-[15px] md:text-[16px] leading-none text-[color:var(--ink)]/60 hover:text-[color:var(--rose-deep)] transition-colors inline-flex items-center gap-1.5"
@@ -138,5 +154,35 @@ function Dot() {
       aria-hidden
       className="w-1 h-1 rounded-full bg-[color:var(--gold)]/60"
     />
+  );
+}
+
+// Small vintage paper-tag showing "editing as ..." — hand-torn corners, string knot dot
+function IdentityTag({ name, isAdmin }: { name: string; isAdmin: boolean }) {
+  const verb = isAdmin ? "editing as" : "writing as";
+  return (
+    <span
+      title={`Signed in as ${name}`}
+      className="hidden md:inline-flex items-center gap-2 px-3 py-1 select-none"
+      style={{
+        background: "color-mix(in oklab, var(--letter-paper) 85%, transparent)",
+        border: "1px solid color-mix(in oklab, var(--sepia) 30%, transparent)",
+        boxShadow: "0 6px 14px -10px rgba(80,40,30,0.4)",
+        transform: "rotate(-1.2deg)",
+        clipPath: "polygon(6% 0%, 100% 0%, 100% 82%, 94% 100%, 0% 100%, 0% 18%)",
+      }}
+    >
+      <span
+        aria-hidden
+        className="w-1.5 h-1.5 rounded-full"
+        style={{ background: "color-mix(in oklab, var(--rose-deep) 70%, transparent)" }}
+      />
+      <span className="stamp-font text-[8px] tracking-[0.34em] text-[color:var(--sepia)]/85 uppercase">
+        {verb}
+      </span>
+      <span className="serif italic text-[13px] leading-none text-ink">
+        {name}
+      </span>
+    </span>
   );
 }

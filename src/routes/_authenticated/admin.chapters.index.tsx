@@ -193,7 +193,7 @@ function SortableChapterRow({
         <h3 className="serif italic text-lg truncate">{chapter.title}</h3>
         <p className="text-xs text-muted-foreground">/{chapter.slug}</p>
       </div>
-      <Link to="/admin/chapters/$id" params={{ id: chapter.id }} className="text-sm text-primary underline">
+      <Link to="/chapters/$id/edit" params={{ id: chapter.id }} className="text-sm text-primary underline">
         Edit
       </Link>
       <button onClick={onDelete} className="text-sm text-destructive">Delete</button>
