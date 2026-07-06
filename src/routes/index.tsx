@@ -307,6 +307,9 @@ function Cover() {
 
         </div>
       </form>
+      </div>
+
+
 
 
       <style>{`
