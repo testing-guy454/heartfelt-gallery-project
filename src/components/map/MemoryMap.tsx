@@ -235,13 +235,13 @@ function EmptyState() {
         No memories have found their place yet.
       </p>
       <p className="serif italic text-ink/70 mt-3">
-        Open a chapter, add a location, and it will bloom on the map.
+        Open a chapter, pin its location, and it will bloom on the map.
       </p>
       <a
         href="/my/chapters"
         className="mt-6 inline-block btn-love"
       >
-        Add a Location
+        Choose a chapter →
       </a>
     </div>
   );
