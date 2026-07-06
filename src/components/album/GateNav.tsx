@@ -9,10 +9,25 @@ export function GateNav() {
   const router = useRouter();
   const lock = useServerFn(lockAlbum);
   const [signedIn, setSignedIn] = useState<boolean>(false);
+  const [identity, setIdentity] = useState<{ name: string; isAdmin: boolean } | null>(null);
+
+  async function loadIdentity() {
+    const { data } = await supabase.auth.getUser();
+    if (!data.user) { setSignedIn(false); setIdentity(null); return; }
+    setSignedIn(true);
+    const [{ data: prof }, { data: role }] = await Promise.all([
+      supabase.from("profiles").select("display_name").eq("id", data.user.id).maybeSingle(),
+      supabase.from("user_roles").select("role").eq("user_id", data.user.id).eq("role", "admin").maybeSingle(),
+    ]);
+    setIdentity({
+      name: prof?.display_name ?? data.user.email?.split("@")[0] ?? "you",
+      isAdmin: !!role,
+    });
+  }
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data }) => setSignedIn(!!data.user));
-    const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => setSignedIn(!!session?.user));
+    loadIdentity();
+    const { data: sub } = supabase.auth.onAuthStateChange(() => { loadIdentity(); });
     return () => { sub.subscription.unsubscribe(); };
   }, []);
 
@@ -65,6 +80,7 @@ export function GateNav() {
             <NavLink to="/auth" label="Sign in" />
           )}
           <Dot />
+          {identity && <IdentityTag name={identity.name} isAdmin={identity.isAdmin} />}
           <button
             onClick={onLock}
             className="group relative serif italic text-[15px] md:text-[16px] leading-none text-[color:var(--ink)]/60 hover:text-[color:var(--rose-deep)] transition-colors inline-flex items-center gap-1.5"
