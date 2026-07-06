@@ -133,7 +133,13 @@ export const createChapter = createServerFn({ method: "POST" })
     const next = ((maxRow?.sort_order as number | undefined) ?? 0) + 1;
     const { data: created, error } = await context.supabase
       .from("chapters")
-      .insert({ title: data.title, slug, description: data.description ?? null, sort_order: next })
+      .insert({
+        title: data.title,
+        slug,
+        description: data.description ?? null,
+        sort_order: next,
+        created_by: context.userId,
+      })
       .select("*").single();
     if (error) throw new Error(error.message);
     return created;
