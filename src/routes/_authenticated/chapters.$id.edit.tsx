@@ -194,6 +194,19 @@ function EditChapter() {
           <Field label="Date start"><input type="date" value={chapter.date_start ?? ""} onChange={(e) => setChapter({ ...chapter, date_start: e.target.value || null })} className="input" /></Field>
           <Field label="Date end"><input type="date" value={chapter.date_end ?? ""} onChange={(e) => setChapter({ ...chapter, date_end: e.target.value || null })} className="input" /></Field>
         </div>
+
+        <div className="pt-4 border-t border-[color:var(--sepia)]/20">
+          <h2 className="serif italic text-xl mb-3">Memory Location <span className="text-xs text-muted-foreground italic">(optional)</span></h2>
+          <LocationPicker
+            value={{
+              location_name: chapter.location_name ?? null,
+              latitude: chapter.latitude ?? null,
+              longitude: chapter.longitude ?? null,
+            }}
+            onChange={(v) => setChapter({ ...chapter, ...v })}
+          />
+        </div>
+
         <button disabled={saving} className="rounded-full bg-primary text-primary-foreground px-6 py-2 text-sm uppercase tracking-wide">
           {saving ? "Saving…" : "Save chapter"}
         </button>
