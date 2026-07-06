@@ -22,6 +22,7 @@ import { Route as Char91DotmcpChar93ListToolsRouteImport } from './routes/[.mcp]
 import { Route as AuthenticatedAdminIndexRouteImport } from './routes/_authenticated/admin.index'
 import { Route as AlbumCSlugRouteImport } from './routes/album.c.$slug'
 import { Route as Char91DotmcpChar93InvokeToolToolRouteImport } from './routes/[.mcp]/invoke-tool/$tool'
+import { Route as DotlovableOauthConsentRouteImport } from './routes/[.]lovable.oauth.consent'
 import { Route as AuthenticatedMyChaptersIndexRouteImport } from './routes/_authenticated/my.chapters.index'
 import { Route as AuthenticatedAdminChaptersIndexRouteImport } from './routes/_authenticated/admin.chapters.index'
 import { Route as AuthenticatedChaptersIdEditRouteImport } from './routes/_authenticated/chapters.$id.edit'
@@ -93,6 +94,11 @@ const Char91DotmcpChar93InvokeToolToolRoute =
     path: '/.mcp/invoke-tool/$tool',
     getParentRoute: () => rootRouteImport,
   } as any)
+const DotlovableOauthConsentRoute = DotlovableOauthConsentRouteImport.update({
+  id: '/.lovable/oauth/consent',
+  path: '/.lovable/oauth/consent',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AuthenticatedMyChaptersIndexRoute =
   AuthenticatedMyChaptersIndexRouteImport.update({
     id: '/my/chapters/',
@@ -122,6 +128,7 @@ export interface FileRoutesByFullPath {
   '/album/favorites': typeof AlbumFavoritesRoute
   '/album/timeline': typeof AlbumTimelineRoute
   '/album/': typeof AlbumIndexRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/album/c/$slug': typeof AlbumCSlugRoute
   '/admin/': typeof AuthenticatedAdminIndexRoute
@@ -139,6 +146,7 @@ export interface FileRoutesByTo {
   '/album/favorites': typeof AlbumFavoritesRoute
   '/album/timeline': typeof AlbumTimelineRoute
   '/album': typeof AlbumIndexRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/album/c/$slug': typeof AlbumCSlugRoute
   '/admin': typeof AuthenticatedAdminIndexRoute
@@ -158,6 +166,7 @@ export interface FileRoutesById {
   '/album/favorites': typeof AlbumFavoritesRoute
   '/album/timeline': typeof AlbumTimelineRoute
   '/album/': typeof AlbumIndexRoute
+  '/.lovable/oauth/consent': typeof DotlovableOauthConsentRoute
   '/.mcp/invoke-tool/$tool': typeof Char91DotmcpChar93InvokeToolToolRoute
   '/album/c/$slug': typeof AlbumCSlugRoute
   '/_authenticated/admin/': typeof AuthenticatedAdminIndexRoute
@@ -177,6 +186,7 @@ export interface FileRouteTypes {
     | '/album/favorites'
     | '/album/timeline'
     | '/album/'
+    | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/album/c/$slug'
     | '/admin/'
@@ -194,6 +204,7 @@ export interface FileRouteTypes {
     | '/album/favorites'
     | '/album/timeline'
     | '/album'
+    | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/album/c/$slug'
     | '/admin'
@@ -212,6 +223,7 @@ export interface FileRouteTypes {
     | '/album/favorites'
     | '/album/timeline'
     | '/album/'
+    | '/.lovable/oauth/consent'
     | '/.mcp/invoke-tool/$tool'
     | '/album/c/$slug'
     | '/_authenticated/admin/'
@@ -231,6 +243,7 @@ export interface RootRouteChildren {
   AlbumFavoritesRoute: typeof AlbumFavoritesRoute
   AlbumTimelineRoute: typeof AlbumTimelineRoute
   AlbumIndexRoute: typeof AlbumIndexRoute
+  DotlovableOauthConsentRoute: typeof DotlovableOauthConsentRoute
   Char91DotmcpChar93InvokeToolToolRoute: typeof Char91DotmcpChar93InvokeToolToolRoute
   AlbumCSlugRoute: typeof AlbumCSlugRoute
 }
@@ -328,6 +341,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof Char91DotmcpChar93InvokeToolToolRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/.lovable/oauth/consent': {
+      id: '/.lovable/oauth/consent'
+      path: '/.lovable/oauth/consent'
+      fullPath: '/.lovable/oauth/consent'
+      preLoaderRoute: typeof DotlovableOauthConsentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/_authenticated/my/chapters/': {
       id: '/_authenticated/my/chapters/'
       path: '/my/chapters'
@@ -381,6 +401,7 @@ const rootRouteChildren: RootRouteChildren = {
   AlbumFavoritesRoute: AlbumFavoritesRoute,
   AlbumTimelineRoute: AlbumTimelineRoute,
   AlbumIndexRoute: AlbumIndexRoute,
+  DotlovableOauthConsentRoute: DotlovableOauthConsentRoute,
   Char91DotmcpChar93InvokeToolToolRoute: Char91DotmcpChar93InvokeToolToolRoute,
   AlbumCSlugRoute: AlbumCSlugRoute,
 }
