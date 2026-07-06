@@ -2,6 +2,7 @@ import { createFileRoute, Link, redirect } from "@tanstack/react-router";
 import { useState, useEffect, type CSSProperties } from "react";
 import { getChapter } from "@/lib/album.functions";
 import { GateNav } from "@/components/album/GateNav";
+import { FavoriteButton } from "@/components/album/FavoriteButton";
 import {
   FloatingPetals,
   Flourish,
@@ -10,6 +11,7 @@ import {
   Postmark,
   Butterfly,
 } from "@/components/album/Ornaments";
+
 
 export const Route = createFileRoute("/album/c/$slug")({
   loader: async ({ params }) => {
@@ -257,6 +259,7 @@ function Tape({
 
 type CardProps = {
   index: number;
+  photoId: string;
   imageUrl: string;
   title?: string | null;
   date?: string | null;
@@ -264,7 +267,8 @@ type CardProps = {
   onOpen: () => void;
 };
 
-function PolaroidCard({ index, imageUrl, title, date, caption, onOpen }: CardProps) {
+function PolaroidCard({ index, photoId, imageUrl, title, date, caption, onOpen }: CardProps) {
+
   // rotate through six layouts to match the reference sheet
   const variant = index % 6;
   // gentle per-index tilt so the collage feels handmade
@@ -390,8 +394,14 @@ function PolaroidCard({ index, imageUrl, title, date, caption, onOpen }: CardPro
               }}
             />
           </button>
+          <FavoriteButton
+            photoId={photoId}
+            className="absolute top-2 right-2 z-10"
+          />
+
           {variant === 2 && <GoldCorners />}
         </div>
+
 
         {/* ------------ printed caption on the paper ------------ */}
         <figcaption className="pt-4 px-1 text-center relative">
@@ -506,6 +516,7 @@ function ChapterView() {
             {photos.map((p: any, i: number) => (
               <PolaroidCard
                 key={p.id}
+                photoId={p.id}
                 index={i}
                 imageUrl={p.image_url}
                 title={p.title}
@@ -514,6 +525,7 @@ function ChapterView() {
                 onOpen={() => setLightbox(i)}
               />
             ))}
+
           </div>
         )}
       </div>
