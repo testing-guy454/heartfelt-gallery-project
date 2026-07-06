@@ -152,7 +152,7 @@ export const updateChapter = createServerFn({ method: "POST" })
     song_url?: string | null; date_start?: string | null; date_end?: string | null;
   }) => data)
   .handler(async ({ data, context }) => {
-    await assertAdmin(context);
+    await assertCanManageChapter(context, data.id);
     const { id, ...patch } = data;
     const { error } = await context.supabase.from("chapters").update(patch).eq("id", id);
     if (error) throw new Error(error.message);
