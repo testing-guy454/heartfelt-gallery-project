@@ -53,11 +53,8 @@ export function MemoryMap({ chapters }: { chapters: MapChapter[] }) {
       (window as any).L = L;
       await import("leaflet.markercluster");
       await import("leaflet.markercluster/dist/MarkerCluster.css");
-      await import("leaflet.markercluster/dist/MarkerCluster.Default.css");
-      // Correct Indian boundaries (Jammu & Kashmir, Arunachal Pradesh) per Survey of India
-      const { extendLeaflet } = await import("@india-boundary-corrector/leaflet-layer");
-      extendLeaflet(L);
-      if (cancelled || !mapEl.current) return;
+
+
 
       const map = L.map(mapEl.current, {
         zoomControl: true,
