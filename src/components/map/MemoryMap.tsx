@@ -61,7 +61,7 @@ export function MemoryMap({ chapters }: { chapters: MapChapter[] }) {
         attributionControl: true,
         scrollWheelZoom: true,
         worldCopyJump: true,
-      }).setView([20, 0], 2);
+      }).setView([22, 79], 5);
 
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution: "&copy; OpenStreetMap contributors",
