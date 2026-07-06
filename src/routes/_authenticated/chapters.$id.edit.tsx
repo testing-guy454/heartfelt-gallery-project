@@ -27,6 +27,7 @@ import {
   reorderPhotos,
 } from "@/lib/admin.functions";
 import { currentUserIsAdmin } from "@/lib/role-guard";
+import { LocationPicker } from "@/components/map/LocationPicker";
 
 export const Route = createFileRoute("/_authenticated/chapters/$id/edit")({
   component: EditChapter,
@@ -103,6 +104,9 @@ function EditChapter() {
       song_url: chapter.song_url,
       date_start: chapter.date_start,
       date_end: chapter.date_end,
+      location_name: chapter.location_name,
+      latitude: chapter.latitude,
+      longitude: chapter.longitude,
     }});
     setSaving(false);
   }
