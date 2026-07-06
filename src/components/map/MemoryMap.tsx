@@ -144,9 +144,15 @@ export function MemoryMap({ chapters }: { chapters: MapChapter[] }) {
     map.addLayer(cluster);
     layerRef.current = cluster;
 
-    // Fit bounds gently
-    const bounds = L.latLngBounds(filtered.map((c) => [c.latitude, c.longitude] as [number, number]));
-    if (bounds.isValid()) map.fitBounds(bounds.pad(0.35), { animate: true, maxZoom: 8 });
+    // On the very first render, keep the initial Bihar view. Only fit bounds
+    // for subsequent filter/data changes.
+    if (didInitialViewRef.current) {
+      const bounds = L.latLngBounds(filtered.map((c) => [c.latitude, c.longitude] as [number, number]));
+      if (bounds.isValid()) map.fitBounds(bounds.pad(0.35), { animate: true, maxZoom: 8 });
+    } else {
+      didInitialViewRef.current = true;
+    }
+
   }, [ready, filtered]);
 
   if (chapters.length === 0) return <EmptyState />;
