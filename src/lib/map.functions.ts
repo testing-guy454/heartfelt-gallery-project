@@ -1,5 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { useSession } from "@tanstack/react-start/server";
+import { redirect } from "@tanstack/react-router";
 import { createClient } from "@supabase/supabase-js";
 import type { Database } from "@/integrations/supabase/types";
 
@@ -18,8 +19,9 @@ function sessionConfig() {
 
 async function requireUnlocked() {
   const session = await useSession<GateSession>(sessionConfig());
-  if (!session.data.unlocked) throw new Error("locked");
+  if (!session.data.unlocked) throw redirect({ to: "/" });
 }
+
 
 function publicClient() {
   return createClient<Database>(
