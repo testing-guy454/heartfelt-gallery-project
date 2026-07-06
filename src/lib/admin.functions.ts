@@ -117,7 +117,8 @@ export const createChapter = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: { title: string; description?: string }) => data)
   .handler(async ({ data, context }) => {
-    await assertAdmin(context);
+    // Any signed-in user can create a chapter; ownership is tracked in created_by.
+
     const base = slugify(data.title);
     let slug = base;
     let n = 1;
