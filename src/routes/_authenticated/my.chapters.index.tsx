@@ -4,7 +4,10 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { listMyChapters, createChapter, deleteChapter } from "@/lib/admin.functions";
 
+import { requireNonAdminOrRedirect } from "@/lib/role-guard";
+
 export const Route = createFileRoute("/_authenticated/my/chapters/")({
+  beforeLoad: async () => { await requireNonAdminOrRedirect(); },
   component: MyChapters,
 });
 

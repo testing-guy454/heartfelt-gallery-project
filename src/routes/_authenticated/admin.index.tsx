@@ -4,7 +4,20 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { adminListChapters, createChapter, deleteChapter, claimFirstAdmin, amIAdmin } from "@/lib/admin.functions";
 
+import { requireAdminOrRedirect } from "@/lib/role-guard";
+
 export const Route = createFileRoute("/_authenticated/admin/")({
+  beforeLoad: async () => {
+    // Allow /admin so first-time admin can claim; guard only after claim.
+    const { supabase } = await import("@/integrations/supabase/client");
+    const { data } = await supabase.auth.getUser();
+    if (!data.user) return;
+    const { count } = await supabase
+      .from("user_roles")
+      .select("*", { count: "exact", head: true })
+      .eq("role", "admin");
+    if ((count ?? 0) > 0) await requireAdminOrRedirect();
+  },
   component: AdminHome,
 });
 
