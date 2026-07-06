@@ -91,7 +91,16 @@ function Favorites() {
                         alt={p.title ?? ""}
                         className="w-full object-cover"
                       />
-                      <FavoriteButton photoId={p.id} className="absolute top-2 right-2" />
+                      <FavoriteButton
+                        photoId={p.id}
+                        className="absolute top-2 right-2"
+                        onToggle={(isFav) => {
+                          if (!isFav) {
+                            setHerFavorites((prev) => prev.filter((x) => x.id !== p.id));
+                          }
+                        }}
+                      />
+
                     </div>
                     <figcaption className="pt-3 pb-1 text-center">
                       {p.title && (
