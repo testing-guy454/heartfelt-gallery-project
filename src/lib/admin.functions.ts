@@ -187,7 +187,7 @@ export const addPhoto = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data: { chapter_id: string; image_url: string; title?: string; caption?: string; taken_at?: string | null }) => data)
   .handler(async ({ data, context }) => {
-    await assertAdmin(context);
+    await assertCanManageChapter(context, data.chapter_id);
     const { data: maxRow } = await context.supabase
       .from("photos").select("sort_order").eq("chapter_id", data.chapter_id)
       .order("sort_order", { ascending: false }).limit(1).maybeSingle();
